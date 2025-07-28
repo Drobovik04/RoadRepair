@@ -1,0 +1,3 @@
+dotnet ef migrations add Init --project RoadRepair.Infrastructure --startup-project RoadRepair.Api
+dotnet ef database update 0 --project RoadRepair.Infrastructure --startup-project RoadRepair.Api отменить миграцию, которая была применина (если без 0, то применить все)
+dotnet ef migrations remove --project RoadRepair.Infrastructure --startup-project RoadRepair.Api удалить не юзаную миграцию

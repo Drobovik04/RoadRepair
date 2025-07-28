@@ -1,0 +1,11 @@
+POST http://localhost:7055/api/Organization
+Content-Type: application/json
+
+{
+  name: "sadsa",
+  address: "sadsad",
+  contactPhone: "sdas",
+  email: "asdas",
+  unp: 1234567,
+  parentId: 1
+}
