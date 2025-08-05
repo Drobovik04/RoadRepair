@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { checkLoginAndGetInfoAboutUser } from "../services/auth";
 import { Spin } from "antd";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setInfo } from "../store/authSlice";
+import type { RootState } from "../store";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null — загрузка
 
   const dispatch = useDispatch();
+  const isBlocked = useSelector((state: RootState) => state.auth.isBlocked);
   // хз как исправить, он кидает ошибку в любом случае если нет логина по причине вызова PrivateRoute
   useEffect(() => {
     const verify = async () => {
@@ -38,7 +40,18 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  if (isBlocked) {
+    localStorage.removeItem("token");
+    return <Navigate to="/blocked" replace />;
+  }
+
+  if (isAuthenticated) {
+    return children;
+  } else {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 };
 
 export default PrivateRoute;

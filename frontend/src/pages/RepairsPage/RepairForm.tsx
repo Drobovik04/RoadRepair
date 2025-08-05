@@ -73,7 +73,7 @@ const RepairForm = ({
           <Input />
         </Form.Item>
         <Form.Item name="description" label="Описание">
-          <Input />
+          <Input.TextArea />
         </Form.Item>
         <Form.Item name="createdAt" label="Создана">
           <DatePicker format="YYYY-MM-DD" />

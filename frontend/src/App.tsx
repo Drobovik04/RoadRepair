@@ -12,21 +12,34 @@ import TypesOfMeasurePage from "./pages/TypesOfMeasurePage/TypesOfMeasurePage";
 import TypesOfServicePage from "./pages/TypesOfServicePage/TypesOfServicePage";
 import TypesOfRepairPage from "./pages/TypesOfRepairPage/TypesOfRepairPage";
 import RepairsPage from "./pages/RepairsPage/RepairsPage";
+import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage";
+import { useSelector } from "react-redux";
+import type { RootState } from "./store";
+import { jwtDecode } from "jwt-decode";
+import BlockedPage from "./pages/BlockPage/BlockPage";
 
 const HomePage = () => <div>Главная</div>;
 const AdminPage = () => <div>Панель администратора</div>;
 
 function App() {
+  // const token = localStorage.getItem("token");
+  // let userRole: string;
+  // if (token != null) {
+  //   const decoded: any = jwtDecode(token);
+  //   userRole = decoded?.role;
+  // }
+  const userRole = useSelector((state: RootState) => state.auth.role);
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/blocked" element={<BlockedPage />} />
         <Route
           path="/"
           element={
             <PrivateRoute>
-              <MainLayout>{/* <HomePage /> */}</MainLayout>
+              <MainLayout role={userRole!}>{/* <HomePage /> */}</MainLayout>
             </PrivateRoute>
           }
         >
@@ -39,15 +52,15 @@ function App() {
           <Route path="/workers" element={<WorkersPage />} />
           <Route path="/typesOfRepair" element={<TypesOfRepairPage />} />
           <Route path="/repairs" element={<RepairsPage />} />
+          <Route
+            path="/adminPanel"
+            element={
+              <RoleRoute role="Admin">
+                <AdminUsersPage />
+              </RoleRoute>
+            }
+          />
         </Route>
-        <Route
-          path="/admin"
-          element={
-            <RoleRoute role="Admin">
-              <MainLayout>{/* <AdminPage /> */}</MainLayout>
-            </RoleRoute>
-          }
-        />
       </Routes>
     </BrowserRouter>
   );

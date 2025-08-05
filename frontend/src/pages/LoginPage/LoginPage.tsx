@@ -12,6 +12,7 @@ const LoginPage = () => {
       navigate("/");
     } catch {
       message.error("Ошибка авторизации");
+      navigate("/blocked");
     }
   };
 

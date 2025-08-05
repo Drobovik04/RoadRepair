@@ -29,6 +29,7 @@ namespace RoadRepair.Application.Users.Commands.CreateUser
                 MiddleName = request.MiddleName,
                 OrganizationId = request.OrganizationId,
                 IdentityId = request.IdentityId,
+                CreatedAt = DateTime.UtcNow,
             };
 
             await _userRepository.AddNewUserAsync(user);

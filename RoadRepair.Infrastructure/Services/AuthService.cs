@@ -1,6 +1,7 @@
 ﻿using Azure;
 using ErrorOr;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -25,13 +26,14 @@ namespace RoadRepair.Infrastructure.Services
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _appDbContext;
 
-        public AuthService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole<long>> roleManager, IUserRepository userRepository, IConfiguration configuration)
+        public AuthService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole<long>> roleManager, IUserRepository userRepository, IConfiguration configuration, AppDbContext appDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _userRepository = userRepository;
             _configuration = configuration;
+            _appDbContext = appDbContext;
         }
 
         public async Task<ErrorOr<(bool, long)>> RegisterAsync(string lastName, string firstName, string? middleName, string userName, string email, string password)
@@ -67,6 +69,103 @@ namespace RoadRepair.Infrastructure.Services
                 return false;
             }
         }
+
+        public async Task<ErrorOr<List<IdentityRole<long>>>> GetAllRoles()
+        {
+            var list = await _roleManager.Roles.ToListAsync();
+
+            if (list.Count != 0)
+            {
+                return list;
+            }
+            else
+            {
+                return Error.Failure(description: "There are not roles");
+            }
+        }
+
+        public async Task<ErrorOr<List<IdentityUser<long>>>> GetAllUsers()
+        {
+            var list = await _userManager.Users.Select(x => x as IdentityUser<long>).ToListAsync();
+
+            if (list.Count != 0)
+            {
+                return list;
+            }
+            else
+            {
+                return Error.Failure(description: "There are not users");
+            }
+        }
+
+        public async Task<ErrorOr<List<User>>> GetAllOrgUsers()
+        {
+            var list = await _appDbContext.OrgUsers.ToListAsync();
+
+            if (list.Count != 0)
+            {
+                return list;
+            }
+            else
+            {
+                return Error.Failure(description: "There are not orgUsers");
+            }
+        }
+
+        public async Task<ErrorOr<IdentityUser<long>>> GetIdentityUserById(long id)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user != null)
+            {
+                return user;
+            }
+            else
+            {
+                return Error.Failure(description: "There is no user with such Id");
+            }
+        }
+
+        public async Task BlockUserById(long identityId, bool status)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == identityId);
+
+            if (user.IsBlocked != status)
+            {
+                user.IsBlocked = status;
+
+                await _appDbContext.CommitChangesAsync();
+            }
+        }
+
+        public async Task UpdateRoleForUser(long identityId, long roleId)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == identityId);
+            var newRole = await _roleManager.Roles.FirstOrDefaultAsync(x => x.Id == roleId);
+
+            var roles = _roleManager.Roles;
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            await _userManager.AddToRoleAsync(user, newRole.Name);
+
+        }
+
+        public async Task UpdateIdentityUser(IdentityUser<long> identityUser)
+        {
+            _appDbContext.Users.Update(identityUser as AppUser);
+            await _appDbContext.CommitChangesAsync();
+        }
+
+        public async Task DeleteIdentityUser(long identityId)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == identityId);
+            if (user != null)
+            {
+                _appDbContext.Users.Remove(user);
+                await _appDbContext.CommitChangesAsync();
+            }
+        }
+
         public async Task<ErrorOr<(string, string)>> LoginAsync(string emailOrUserName, string password)
         {
             AppUser? user = await _userManager.FindByEmailAsync(emailOrUserName);
@@ -87,6 +186,11 @@ namespace RoadRepair.Infrastructure.Services
             if (!result.Succeeded)
             {
                 return Error.Failure(description: "Invalid password"); // лучше так не делать, а то мы говорим, что такая почта есть
+            }
+
+            if (user.IsBlocked)
+            {
+                return Error.Failure(description: "This User is blocked");
             }
 
             var token = GenerateToken(user);
@@ -138,7 +242,8 @@ namespace RoadRepair.Infrastructure.Services
         }
         public async Task<ErrorOr<Dictionary<string, object>>> GetInfoAboutUser(string id)
         {
-            var user = await _userRepository.FindUserByAppUserIdAsync((await _userManager.FindByIdAsync(id)).Id);
+            var identityUser = await _userManager.FindByIdAsync(id);
+            var user = await _userRepository.FindUserByAppUserIdAsync(identityUser.Id);
 
             var info = new Dictionary<string, object>
             {
@@ -147,6 +252,12 @@ namespace RoadRepair.Infrastructure.Services
                 { "FirstName", user.FirstName },
                 { "MiddleName", user.MiddleName },
             };
+            var roles = _userManager.GetRolesAsync(identityUser).Result.Select(x => new Claim("role", x));
+
+            info.Add(roles.First().Type, roles.First().Value);
+
+            info.Add("isBlocked", identityUser.IsBlocked);
+
 
             return info;
         }
@@ -161,6 +272,7 @@ namespace RoadRepair.Infrastructure.Services
             };
 
             claims.AddRange(_userManager.GetRolesAsync(user).Result.Select(x => new Claim(ClaimTypes.Role, x)));
+            claims.AddRange(_userManager.GetRolesAsync(user).Result.Select(x => new Claim("role", x))); //это для того, чтобы считывать из поля Role, верхняя для ASP нормально работает
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

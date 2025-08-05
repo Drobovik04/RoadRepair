@@ -56,6 +56,11 @@ const items: MenuItem[] = [
   getItem("Ремонты", "repairs", <UnorderedListOutlined />),
 ];
 
+const itemsWithAdmin = [...items];
+itemsWithAdmin.push(
+  getItem("Админ панель", "adminPanel", <UnorderedListOutlined />)
+);
+
 const menuItemToPath = new Map([
   ["profile", "/profile"],
   ["typesOfMeasure", "/typesOfMeasure"],
@@ -66,9 +71,14 @@ const menuItemToPath = new Map([
   ["positions", "/positions"],
   ["workers", "/workers"],
   ["repairs", "/repairs"],
+  ["adminPanel", "/adminPanel"],
 ]);
 
-const MainLayout = () => {
+interface Props {
+  role: string;
+}
+
+const MainLayout = ({ role }: Props) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,7 +88,7 @@ const MainLayout = () => {
       " " +
       state.auth.firstName +
       " " +
-      state.auth.middleName
+      (state.auth.middleName ?? "")
   );
 
   const {
@@ -111,7 +121,7 @@ const MainLayout = () => {
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
-          items={items}
+          items={role == "Admin" ? itemsWithAdmin : items}
           onClick={handleMouseClick}
         />
       </Sider>
