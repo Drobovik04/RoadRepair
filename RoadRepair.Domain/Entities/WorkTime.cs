@@ -11,7 +11,7 @@ namespace RoadRepair.Domain.Entities
         public long Id { get; set; }
         public DateOnly DayOfWork { get; set; }
         public double Hours { get; set; }
-        public long RepairEventWorkerId { get; set; }
-        public RepairEventWorker RepairEventWorker { get; set; }
+        public long WorkAreaWorkerId { get; set; }
+        public WorkAreaWorker WorkAreaWorker { get; set; }
     }
 }

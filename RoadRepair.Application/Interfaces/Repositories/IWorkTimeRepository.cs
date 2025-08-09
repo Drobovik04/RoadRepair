@@ -10,7 +10,7 @@ namespace RoadRepair.Application.Interfaces.Repositories
     public interface IWorkTimeRepository
     {
         Task<IEnumerable<WorkTime>> GetAllWorkTimesAsync();
-        Task<IEnumerable<WorkTime>> GetAllWorkTimesByRepairEventWorkerIdAsync(long repairEventWorkerId);
+        Task<IEnumerable<WorkTime>> GetAllWorkTimesByWorkAreaWorkerIdAsync(long workAreaWorkerId);
         Task<WorkTime?> GetWorkTimeByIdAsync(long id);
         Task AddWorkTimeAsync(WorkTime workTime);
         void UpdateWorkTime(WorkTime workTime);

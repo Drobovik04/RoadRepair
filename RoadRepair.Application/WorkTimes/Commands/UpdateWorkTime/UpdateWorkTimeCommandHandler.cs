@@ -26,7 +26,7 @@ namespace RoadRepair.Application.WorkTimes.Commands.UpdateWorkTime
 
             workTime.DayOfWork = request.DayOfWork;
             workTime.Hours = request.Hours;
-            workTime.RepairEventWorkerId = request.RepairEventWorkerId;
+            workTime.WorkAreaWorkerId = request.WorkAreaWorkerId;
 
             _workTimeRepository.UpdateWorkTime(workTime);
 

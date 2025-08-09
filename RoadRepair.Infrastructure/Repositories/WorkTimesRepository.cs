@@ -39,9 +39,9 @@ namespace RoadRepair.Infrastructure.Repositories
             _context.WorkTimes.Remove(workTime);
         }
 
-        public async Task<IEnumerable<WorkTime>> GetAllWorkTimesByRepairEventWorkerIdAsync(long repairEventWorkerId)
+        public async Task<IEnumerable<WorkTime>> GetAllWorkTimesByWorkAreaWorkerIdAsync(long workAreaWorkerId)
         {
-            return await _context.WorkTimes.Where(x => x.RepairEventWorkerId == repairEventWorkerId).ToListAsync();
+            return await _context.WorkTimes.Where(x => x.WorkAreaWorkerId == workAreaWorkerId).ToListAsync();
         }
 
         public void DeleteAllWorkTimes(List<WorkTime> workTimes)

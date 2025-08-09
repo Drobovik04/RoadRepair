@@ -17,6 +17,5 @@ namespace RoadRepair.Domain.Entities
         public TypeOfRepair TypeOfRepair { get; set; }
         public List<RepairEventMedia> RepairEventMedia { get; set; }
         public List<MaterialSpend> MaterialSpends { get; set; }
-        public List<RepairEventWorker> RepairEventWorkers { get; set; }
     }
 }

@@ -15,18 +15,18 @@ import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import type { Worker } from "../types/Worker";
-import type { RepairEventWorker } from "../types/RepairEventWorker";
+import type { WorkAreaWorker } from "../types/WorkAreaWorker";
 import type { WorkTime } from "../types/WorkTime";
 import {
-  getRepairEventWorkers,
-  addRepairEventWorker,
-  deleteRepairEventWorker,
-} from "../services/repairEventWorker";
+  getWorkAreaWorkers,
+  addWorkAreaWorker,
+  deleteWorkAreaWorker,
+} from "../services/workAreaWorker";
 import {
-  getAllWorkTimesByRepairEventWorkerId,
+  getAllWorkTimesByWorkAreaWorkerId,
   addWorkTime,
   deleteWorkTime,
-  deleteWorkTimeByRepairEventWorkerId,
+  deleteWorkTimeByWorkAreaWorkerId,
   saveAllWorkTimes,
 } from "../services/workTime";
 import { getWorkers } from "../services/workers";
@@ -35,19 +35,14 @@ dayjs.extend(isSameOrBefore);
 
 const { Title } = Typography;
 
-// Пропсы
 interface Props {
-  repairEventId: number;
+  workAreaId: number;
   startDate: string; // ISO
   endDate: string;
 }
 
-const WorkTimeTable: React.FC<Props> = ({
-  repairEventId,
-  startDate,
-  endDate,
-}) => {
-  const [workersList, setWorkersList] = useState<RepairEventWorker[]>([]);
+const WorkTimeTable: React.FC<Props> = ({ workAreaId, startDate, endDate }) => {
+  const [workersList, setWorkersList] = useState<WorkAreaWorker[]>([]);
   const [allWorkers, setAllWorkers] = useState<Worker[]>([]);
   const [workTimes, setWorkTimes] = useState<WorkTime[]>([]);
   const [dateList, setDateList] = useState<string[]>([]);
@@ -74,14 +69,14 @@ const WorkTimeTable: React.FC<Props> = ({
     async function load() {
       try {
         const [respWorkers, respAll] = await Promise.all([
-          await getRepairEventWorkers(repairEventId),
+          await getWorkAreaWorkers(workAreaId),
           await getWorkers(),
         ]);
 
         const newWorkers = respWorkers.data;
 
         const allWorkTimesResults = await Promise.all(
-          newWorkers.map((x) => getAllWorkTimesByRepairEventWorkerId(x.id))
+          newWorkers.map((x) => getAllWorkTimesByWorkAreaWorkerId(x.id))
         );
 
         const allWorkTimes = allWorkTimesResults.flatMap((r) => r.data);
@@ -100,18 +95,18 @@ const WorkTimeTable: React.FC<Props> = ({
     return () => {
       isCancelled = true;
     };
-  }, [repairEventId]);
+  }, [workAreaId]);
 
   // Обработка изменений
   const handleCellChange = (
-    workerRow: RepairEventWorker,
+    workerRow: WorkAreaWorker,
     date: string,
     val: number | null
   ) => {
     setWorkTimes((prev) => {
       const idx = prev.findIndex(
         (w) =>
-          w.repairEventWorkerId === workerRow.id &&
+          w.workAreaWorkerId === workerRow.id &&
           dayjs(w.dayOfWork).isSame(date, "day")
       );
       const newVal = val ?? 0;
@@ -132,7 +127,7 @@ const WorkTimeTable: React.FC<Props> = ({
             id: 0,
             dayOfWork: dayjs(date).toDate(),
             hours: newVal,
-            repairEventWorkerId: workerRow.id,
+            workAreaWorkerId: workerRow.id,
           },
         ];
       }
@@ -158,7 +153,7 @@ const WorkTimeTable: React.FC<Props> = ({
         dateList.map((date) => {
           const wt = workTimes.find(
             (w) =>
-              w.repairEventWorkerId === row.id &&
+              w.workAreaWorkerId === row.id &&
               dayjs(w.dayOfWork).isSame(date, "day")
           );
           return [date, wt?.hours ?? 0];
@@ -178,13 +173,13 @@ const WorkTimeTable: React.FC<Props> = ({
         <Space style={{ display: "flex", justifyContent: "space-between" }}>
           {rec.fullName}
           <Popconfirm
-            title="Удалить сотрудника из события?"
+            title="Удалить сотрудника из заявки на ремонт?"
             onConfirm={async () => {
-              await deleteWorkTimeByRepairEventWorkerId(rec.row.id);
-              await deleteRepairEventWorker(rec.row.id);
+              await deleteWorkTimeByWorkAreaWorkerId(rec.row.id);
+              await deleteWorkAreaWorker(rec.row.id);
               setWorkersList((prev) => prev.filter((r) => r.id !== rec.row.id));
               setWorkTimes((prev) =>
-                prev.filter((w) => w.repairEventWorkerId !== rec.row.id)
+                prev.filter((w) => w.workAreaWorkerId !== rec.row.id)
               );
               message.success("Удален");
             }}
@@ -243,17 +238,17 @@ const WorkTimeTable: React.FC<Props> = ({
     }
 
     try {
-      const resp = await addRepairEventWorker({
-        repairEventId,
+      const resp = await addWorkAreaWorker({
+        workAreaId,
         workerId: selectedWorkerId,
       });
 
-      const newWorkersResp = await getRepairEventWorkers(repairEventId);
+      const newWorkersResp = await getWorkAreaWorkers(workAreaId);
       const newWorkers = newWorkersResp.data;
 
       const allTimes = await Promise.all(
         newWorkers.map((w) =>
-          getAllWorkTimesByRepairEventWorkerId(w.id).then((res) => res.data)
+          getAllWorkTimesByWorkAreaWorkerId(w.id).then((res) => res.data)
         )
       );
 

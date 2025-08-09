@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Application.WorkTimes.Commands.UpdateWorkTime
 {
-    public record UpdateWorkTimeCommand(long WorkTimeId, DateOnly DayOfWork, double Hours, long RepairEventWorkerId) : IRequest<ErrorOr<bool>>;
+    public record UpdateWorkTimeCommand(long WorkTimeId, DateOnly DayOfWork, double Hours, long WorkAreaWorkerId) : IRequest<ErrorOr<bool>>;
 }

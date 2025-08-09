@@ -24,7 +24,7 @@ namespace RoadRepair.Infrastructure.Data
         public DbSet<Position> Positions { get; set; }
         public DbSet<RepairEvent> RepairEvents { get; set; }
         public DbSet<RepairEventMedia> RepairEventMedia { get; set; }
-        public DbSet<RepairEventWorker> RepairEventWorkers { get; set; }
+        public DbSet<WorkAreaWorker> WorkAreaWorkers { get; set; }
         public DbSet<RepairZone> RepairZones { get; set; }
         //public new DbSet<Role> Roles { get; set; } // может ошибка будет из-за перекрытия ролей edentity пока удалил, identity их реализует
         public DbSet<TypeOfRepair> TypesOfRepair { get; set; }
@@ -92,17 +92,17 @@ namespace RoadRepair.Infrastructure.Data
                 .Property(x => x.Price)
                 .HasPrecision(18, 2);
 
-            // RepairEventWorker
+            // WorkAreaWorker
 
-            modelBuilder.Entity<RepairEventWorker>()
+            modelBuilder.Entity<WorkAreaWorker>()
                 .HasOne(x => x.Worker)
-                .WithMany(x => x.RepairEventWorkers)
+                .WithMany(x => x.WorkAreaWorkers)
                 .HasForeignKey(x => x.WorkerId);
 
-            modelBuilder.Entity<RepairEventWorker>()
-                .HasOne(x => x.RepairEvent)
-                .WithMany(x => x.RepairEventWorkers)
-                .HasForeignKey(x => x.RepairEventId);
+            modelBuilder.Entity<WorkAreaWorker>()
+                .HasOne(x => x.WorkArea)
+                .WithMany(x => x.WorkAreaWorkers)
+                .HasForeignKey(x => x.WorkAreaId);
 
             modelBuilder.Entity<User>()
                 .HasOne(x => x.Organization)
@@ -138,7 +138,7 @@ namespace RoadRepair.Infrastructure.Data
 
             // WorkTime
             modelBuilder.Entity<WorkTime>()
-                .HasIndex(wt => new { wt.RepairEventWorkerId, wt.DayOfWork })
+                .HasIndex(wt => new { wt.WorkAreaWorkerId, wt.DayOfWork })
                 .IsUnique();
 
         }

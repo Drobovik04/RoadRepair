@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Application.WorkTimes.Commands.CreateWorkTime
 {
-    public record CreateWorkTimeCommand(DateOnly DayOfWork, double Hours, long RepairEventWorkerId) : IRequest<ErrorOr<WorkTime>>;
+    public record CreateWorkTimeCommand(DateOnly DayOfWork, double Hours, long WorkAreaWorkerId) : IRequest<ErrorOr<WorkTime>>;
 }

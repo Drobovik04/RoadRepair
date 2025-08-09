@@ -18,7 +18,7 @@ namespace RoadRepair.Domain.Entities
         public DateOnly? FiredAt { get; set; }
         public long? PositionId { get; set; }
         public Position? Position { get; set; }
-        public List<RepairEventWorker> RepairEventWorkers { get; set; }
+        public List<WorkAreaWorker> WorkAreaWorkers { get; set; }
         
     }
 }

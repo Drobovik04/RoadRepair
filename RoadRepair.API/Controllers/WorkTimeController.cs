@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using RoadRepair.Application.Workers.Queries.GetAllWorkers;
 using RoadRepair.Application.WorkTimes.Commands.BulkUpdateWorkTime;
 using RoadRepair.Application.WorkTimes.Commands.CreateWorkTime;
-using RoadRepair.Application.WorkTimes.Commands.DeleteAllWorkTimesByRepairEventWorkerId;
+using RoadRepair.Application.WorkTimes.Commands.DeleteAllWorkTimesByWorkAreaWorkerId;
 using RoadRepair.Application.WorkTimes.Commands.DeleteWorkTime;
 using RoadRepair.Application.WorkTimes.Commands.UpdateWorkTime;
-using RoadRepair.Application.WorkTimes.Queries.GetAllWorkTimesByRepairEventWorkerId;
+using RoadRepair.Application.WorkTimes.Queries.GetAllWorkTimesByWorkAreaWorkerId;
 using RoadRepair.Application.WorkTimes.Queries.GetWorkTime;
 using RoadRepair.Contracts.WorkTimes.BulkUpdateWorkTime;
 using RoadRepair.Contracts.WorkTimes.CreateWorkTime;
-using RoadRepair.Contracts.WorkTimes.GetAllWorkTimesByRepairEventWorkerId;
 using RoadRepair.Contracts.WorkTimes.GetWorkTime;
 using RoadRepair.Contracts.WorkTimes.UpdateWorkTime;
 using RoadRepair.Domain.Entities;
@@ -28,18 +27,18 @@ namespace RoadRepair.API.Controllers
             _mediator = mediatr;
         }
 
-        [HttpGet("repairEventWorker/{repairEventWorkerId:long}")]
-        public async Task<IActionResult> GetAllWorkTimesByRepairEventWorkerId(long repairEventWorkerId)
+        [HttpGet("workAreaWorker/{workAreaWorkerId:long}")]
+        public async Task<IActionResult> GetAllWorkTimesByWorkAreaWorkerId(long workAreaWorkerId)
         {
-            var query = new GetAllWorkTimesByRepairEventWorkerIdQuery(repairEventWorkerId);
+            var query = new GetAllWorkTimesByWorkAreaWorkerIdQuery(workAreaWorkerId);
 
             var getWorkTimesResult = await _mediator.Send(query);
 
             return getWorkTimesResult.MatchFirst(
-                workTime => Ok(new List<Contracts.WorkTimes.GetAllWorkTimesByRepairEventWorkerId.WorkTimeInfo>(workTime.Select(x => new Contracts.WorkTimes.GetAllWorkTimesByRepairEventWorkerId.WorkTimeInfo(x.Id, x.DayOfWork, (float)x.Hours, x.RepairEventWorkerId)))),
+                workTime => Ok(new List<Contracts.WorkTimes.GetAllWorkTimesByWorkAreaWorkerId.WorkTimeInfo>(workTime.Select(x => new Contracts.WorkTimes.GetAllWorkTimesByWorkAreaWorkerId.WorkTimeInfo(x.Id, x.DayOfWork, (float)x.Hours, x.WorkAreaWorkerId)))),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
-                    detail: "There are no WorkTimes with such RepairEventWorkerId"));
+                    detail: "There are no WorkTimes with such WorkAreaWorkerId"));
         }
 
         [HttpGet("{workTimeId:long}")]
@@ -83,7 +82,7 @@ namespace RoadRepair.API.Controllers
         [HttpPost("bulkWorkTime/")]
         public async Task<IActionResult> BulkUpdateWorkTime([FromBody] List<WorkTimeInfo> request)
         {
-            var command = new BulkUpdateWorkTimeCommand(request.Select(x => new WorkTime {Id = x.Id, DayOfWork = x.DayOfWork, Hours = x.Hours, RepairEventWorkerId = x.RepairEventWorkerId}).ToList());
+            var command = new BulkUpdateWorkTimeCommand(request.Select(x => new WorkTime {Id = x.Id, DayOfWork = x.DayOfWork, Hours = x.Hours, WorkAreaWorkerId = x.WorkAreaWorkerId }).ToList());
 
             var result = await _mediator.Send(command);
 
@@ -104,10 +103,10 @@ namespace RoadRepair.API.Controllers
                 error => Problem(error.Description));
         }
 
-        [HttpDelete("repairEventWorker/{repairEventWorkerId}")]
-        public async Task<IActionResult> DeleteAllWorkTimesByRepairEventWorkerId(long repairEventWorkerId)
+        [HttpDelete("workAreaWorker/{workAreaWorkerId}")]
+        public async Task<IActionResult> DeleteAllWorkTimesByWorkAreaWorkerId(long workAreaWorkerId)
         {
-            var command = new DeleteAllWorkTimesByRepairEventWorkerIdCommand(repairEventWorkerId);
+            var command = new DeleteAllWorkTimesByWorkAreaWorkerIdCommand(workAreaWorkerId);
 
             var result = await _mediator.Send(command);
 

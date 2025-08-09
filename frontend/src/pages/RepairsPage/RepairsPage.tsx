@@ -27,6 +27,7 @@ import {
 } from "../../services/repairs";
 import RepairForm from "./RepairForm";
 import ContractorServicesPage from "../ContractorServicePage/ContractorServicePage";
+import WorkTimeTable from "../../components/WorkTImeTable";
 
 const { TabPane } = Tabs;
 
@@ -247,6 +248,11 @@ const RepairsPage = () => {
             {/* <p>Затраченные материалы</p> */}
           </TabPane>
           <TabPane tab="Рабочие" key="6">
+            <WorkTimeTable
+              workAreaId={selectedWorkArea.id}
+              startDate="2025-07-01"
+              endDate="2025-07-07"
+            />
             {/* <p>Календарь трудозатрат, сотрудники</p> */}
           </TabPane>
         </Tabs>

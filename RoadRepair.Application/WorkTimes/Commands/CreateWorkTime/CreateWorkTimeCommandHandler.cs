@@ -27,7 +27,7 @@ namespace RoadRepair.Application.WorkTimes.Commands.CreateWorkTime
             {
                 DayOfWork = request.DayOfWork,
                 Hours = request.Hours,
-                RepairEventWorkerId = request.RepairEventWorkerId,
+                WorkAreaWorkerId = request.WorkAreaWorkerId,
             };
 
             await _workTimeRepository.AddWorkTimeAsync(workTime);

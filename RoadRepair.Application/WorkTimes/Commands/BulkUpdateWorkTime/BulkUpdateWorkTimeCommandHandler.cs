@@ -61,22 +61,22 @@ namespace RoadRepair.Application.WorkTimes.Commands.BulkUpdateWorkTime
             if (workTimes == null || workTimes.Count == 0)
                 return true;
 
-            var repairEventWorkerIds = workTimes
-                .Select(wt => wt.RepairEventWorkerId)
+            var workAreaWorkerIds = workTimes
+                .Select(wt => wt.WorkAreaWorkerId)
                 .Distinct()
                 .ToList();
 
             // Получаем все существующие записи для всех переданных работников
             var existing = new List<WorkTime>();
 
-            for (int i = 0; i < repairEventWorkerIds.Count; i++)
+            for (int i = 0; i < workAreaWorkerIds.Count; i++)
             {
-                existing.AddRange(await _workTimeRepository.GetAllWorkTimesByRepairEventWorkerIdAsync(repairEventWorkerIds[i]));
+                existing.AddRange(await _workTimeRepository.GetAllWorkTimesByWorkAreaWorkerIdAsync(workAreaWorkerIds[i]));
             }
 
             // Преобразуем в словарь (key = workerId + date) для быстрого доступа
             var existingMap = existing
-                .GroupBy(e => (e.RepairEventWorkerId, e.DayOfWork))
+                .GroupBy(e => (e.WorkAreaWorkerId, e.DayOfWork))
                 .ToDictionary(
                     g => g.Key,
                     g => g.OrderBy(x => x.Id).ToList()
@@ -85,7 +85,7 @@ namespace RoadRepair.Application.WorkTimes.Commands.BulkUpdateWorkTime
             // Обработка: добавление, обновление
             foreach (var wt in workTimes)
             {
-                var key = (wt.RepairEventWorkerId, wt.DayOfWork);
+                var key = (wt.WorkAreaWorkerId, wt.DayOfWork);
 
                 if (existingMap.TryGetValue(key, out var entries))
                 {
@@ -101,7 +101,7 @@ namespace RoadRepair.Application.WorkTimes.Commands.BulkUpdateWorkTime
                     // Добавляем новую запись
                     await _workTimeRepository.AddWorkTimeAsync(new WorkTime
                     {
-                        RepairEventWorkerId = wt.RepairEventWorkerId,
+                        WorkAreaWorkerId = wt.WorkAreaWorkerId,
                         DayOfWork = wt.DayOfWork,
                         Hours = wt.Hours
                     });
@@ -109,11 +109,11 @@ namespace RoadRepair.Application.WorkTimes.Commands.BulkUpdateWorkTime
             }
 
             // Удаление записей, которых нет в новом списке
-            var validKeys = workTimes.Select(wt => (wt.RepairEventWorkerId, wt.DayOfWork)).ToHashSet();
+            var validKeys = workTimes.Select(wt => (wt.WorkAreaWorkerId, wt.DayOfWork)).ToHashSet();
 
             foreach (var existingEntry in existing)
             {
-                var key = (existingEntry.RepairEventWorkerId, existingEntry.DayOfWork);
+                var key = (existingEntry.WorkAreaWorkerId, existingEntry.DayOfWork);
                 if (!validKeys.Contains(key))
                 {
                     _workTimeRepository.DeleteWorkTime(existingEntry);

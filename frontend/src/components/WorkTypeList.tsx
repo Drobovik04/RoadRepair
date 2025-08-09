@@ -186,12 +186,6 @@ const WorkTypeList = ({ zoneId }: Props) => {
               <MaterialList repairEventId={item.id} />
               <Divider />
               <MediaList repairEventId={item.id} />
-              <Divider />
-              <WorkTimeTable
-                repairEventId={item.id}
-                startDate="2025-07-01"
-                endDate="2025-07-07"
-              />
             </Card>
           </List.Item>
         )}

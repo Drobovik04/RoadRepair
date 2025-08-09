@@ -81,7 +81,7 @@ namespace RoadRepair.Infrastructure
             services.AddScoped<IWorkAreaRepository, WorkAreasRepository>();
             services.AddScoped<IRepairEventRepository, RepairEventsRepository>();
             services.AddScoped<IRepairEventMediaRepository, RepairEventMediaRepository>();
-            services.AddScoped<IRepairEventWorkerRepository, RepairEventWorkersRepository>();
+            services.AddScoped<IWorkAreaWorkerRepository, WorkAreaWorkersRepository>();
 
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<AppDbContext>());
             services.AddScoped<IFileService, FileService>();

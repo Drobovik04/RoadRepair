@@ -396,29 +396,6 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.ToTable("RepairEventMedia");
                 });
 
-            modelBuilder.Entity("RoadRepair.Domain.Entities.RepairEventWorker", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("RepairEventId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("WorkerId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RepairEventId");
-
-                    b.HasIndex("WorkerId");
-
-                    b.ToTable("RepairEventWorkers");
-                });
-
             modelBuilder.Entity("RoadRepair.Domain.Entities.RepairZone", b =>
                 {
                     b.Property<long>("Id")
@@ -575,6 +552,29 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.ToTable("WorkAreas");
                 });
 
+            modelBuilder.Entity("RoadRepair.Domain.Entities.WorkAreaWorker", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("WorkAreaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("WorkerId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkAreaId");
+
+                    b.HasIndex("WorkerId");
+
+                    b.ToTable("WorkAreaWorkers");
+                });
+
             modelBuilder.Entity("RoadRepair.Domain.Entities.WorkTime", b =>
                 {
                     b.Property<long>("Id")
@@ -589,12 +589,12 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.Property<long>("RepairEventWorkerId")
+                    b.Property<long>("WorkAreaWorkerId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RepairEventWorkerId", "DayOfWork")
+                    b.HasIndex("WorkAreaWorkerId", "DayOfWork")
                         .IsUnique();
 
                     b.ToTable("WorkTimes");
@@ -878,25 +878,6 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.Navigation("RepairEvent");
                 });
 
-            modelBuilder.Entity("RoadRepair.Domain.Entities.RepairEventWorker", b =>
-                {
-                    b.HasOne("RoadRepair.Domain.Entities.RepairEvent", "RepairEvent")
-                        .WithMany("RepairEventWorkers")
-                        .HasForeignKey("RepairEventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RoadRepair.Domain.Entities.Worker", "Worker")
-                        .WithMany("RepairEventWorkers")
-                        .HasForeignKey("WorkerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("RepairEvent");
-
-                    b.Navigation("Worker");
-                });
-
             modelBuilder.Entity("RoadRepair.Domain.Entities.RepairZone", b =>
                 {
                     b.HasOne("RoadRepair.Domain.Entities.WorkArea", "WorkArea")
@@ -936,15 +917,34 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.Navigation("Responsible");
                 });
 
-            modelBuilder.Entity("RoadRepair.Domain.Entities.WorkTime", b =>
+            modelBuilder.Entity("RoadRepair.Domain.Entities.WorkAreaWorker", b =>
                 {
-                    b.HasOne("RoadRepair.Domain.Entities.RepairEventWorker", "RepairEventWorker")
-                        .WithMany("WorkTimes")
-                        .HasForeignKey("RepairEventWorkerId")
+                    b.HasOne("RoadRepair.Domain.Entities.WorkArea", "WorkArea")
+                        .WithMany("WorkAreaWorkers")
+                        .HasForeignKey("WorkAreaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RepairEventWorker");
+                    b.HasOne("RoadRepair.Domain.Entities.Worker", "Worker")
+                        .WithMany("WorkAreaWorkers")
+                        .HasForeignKey("WorkerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("WorkArea");
+
+                    b.Navigation("Worker");
+                });
+
+            modelBuilder.Entity("RoadRepair.Domain.Entities.WorkTime", b =>
+                {
+                    b.HasOne("RoadRepair.Domain.Entities.WorkAreaWorker", "WorkAreaWorker")
+                        .WithMany("WorkTimes")
+                        .HasForeignKey("WorkAreaWorkerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkAreaWorker");
                 });
 
             modelBuilder.Entity("RoadRepair.Domain.Entities.Worker", b =>
@@ -992,13 +992,6 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.Navigation("MaterialSpends");
 
                     b.Navigation("RepairEventMedia");
-
-                    b.Navigation("RepairEventWorkers");
-                });
-
-            modelBuilder.Entity("RoadRepair.Domain.Entities.RepairEventWorker", b =>
-                {
-                    b.Navigation("WorkTimes");
                 });
 
             modelBuilder.Entity("RoadRepair.Domain.Entities.RepairZone", b =>
@@ -1016,11 +1009,18 @@ namespace RoadRepair.Infrastructure.Migrations
                     b.Navigation("ContractorServices");
 
                     b.Navigation("RepairZones");
+
+                    b.Navigation("WorkAreaWorkers");
+                });
+
+            modelBuilder.Entity("RoadRepair.Domain.Entities.WorkAreaWorker", b =>
+                {
+                    b.Navigation("WorkTimes");
                 });
 
             modelBuilder.Entity("RoadRepair.Domain.Entities.Worker", b =>
                 {
-                    b.Navigation("RepairEventWorkers");
+                    b.Navigation("WorkAreaWorkers");
                 });
 #pragma warning restore 612, 618
         }

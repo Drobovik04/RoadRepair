@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -8,6 +9,7 @@ using RoadRepair.Application.Interfaces.Repositories;
 using RoadRepair.Application.Users.Commands.AssignIdentityAndUser;
 using RoadRepair.Application.Users.Commands.CreateUser;
 using RoadRepair.Domain.Entities;
+using RoadRepair.Infrastructure.Identity;
 using RoadRepair.Tests.Database;
 using System;
 using System.Collections.Generic;
@@ -26,12 +28,14 @@ namespace RoadRepair.Tests.Auth
             using var context = CreateContext();
             var authServiceMock = new Mock<IAuthService>();
             var mediatorMock = new Mock<IMediator>();
+            var userManagerMock = new Mock<UserManager<AppUser>>();
+            var roleManagerMock = new Mock<RoleManager<IdentityRole<long>>>();
 
-            var controller = new AuthController(authServiceMock.Object, mediatorMock.Object);
+            var controller = new AuthController(authServiceMock.Object, mediatorMock.Object, userManagerMock.Object, roleManagerMock.Object);
 
             authServiceMock
                 .Setup(x => x.RegisterAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync((true, It.IsAny<long>()));
 
             mediatorMock
                 .Setup(x => x.Send(It.IsAny<CreateUserCommand>(), default))
@@ -41,7 +45,7 @@ namespace RoadRepair.Tests.Auth
                 .Setup(x => x.Send(It.IsAny<AssignIdentityAndUserCommand>(), default))
                 .ReturnsAsync(true);
 
-            var result = controller.Register("Ivanov", "Ivan", null, "ivanov", "ivan@mail.com", "Qwe123!", 1);
+            var result = controller.Register(new Contracts.Auth.RegisterUser.RegisterUserRequest("Ivanov", "Ivan", null, "ivanov", "ivan@mail.com", "Qwe123!", 1));
 
             Assert.That(result.Result.GetType() == typeof(OkObjectResult));
         }

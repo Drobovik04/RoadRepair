@@ -22,5 +22,6 @@ namespace RoadRepair.Domain.Entities
         public Worker? Responsible {  get; set; }
         public List<ContractorService> ContractorServices { get; set; }
         public List<RepairZone> RepairZones { get; set; }
+        public List<WorkAreaWorker> WorkAreaWorkers { get; set; }
     }
 }
