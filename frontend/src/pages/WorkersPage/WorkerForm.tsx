@@ -11,16 +11,9 @@ interface Props {
   onClose: () => void;
   onSubmit: (values: any) => void;
   initialValues?: any;
-  organizationId: number;
 }
 
-const WorkerForm = ({
-  open,
-  onClose,
-  onSubmit,
-  initialValues,
-  organizationId,
-}: Props) => {
+const WorkerForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
   const [form] = Form.useForm();
   const [formFields, setFormFields] = useState<any>(null);
   const [positions, setPositions] = useState<Position[]>([]);
@@ -37,9 +30,8 @@ const WorkerForm = ({
         form.resetFields();
         setEditingWorker(null);
       }
-      form.setFieldValue("organizationId", organizationId);
     }
-  }, [initialValues, organizationId, open]);
+  }, [initialValues, open]);
 
   useEffect(() => {
     getPositions().then((res) => setPositions(res.data));

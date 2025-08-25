@@ -3,5 +3,4 @@ export interface Material {
   name: string;
   typeOfMeasureId: number;
   typeOfMeasureName: string;
-  organizationId: number | null;
 }

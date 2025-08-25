@@ -7,7 +7,6 @@ interface AuthState {
   firstName: string | null;
   middleName: string | null;
   role: string | null;
-  organizationId: number | null;
   isBlocked: boolean | null;
 }
 
@@ -17,7 +16,6 @@ const initialState: AuthState = {
   firstName: null,
   middleName: null,
   role: null,
-  organizationId: null,
   isBlocked: null,
 };
 
@@ -32,13 +30,11 @@ const authSlice = createSlice({
       state.firstName = info.firstName || null;
       state.middleName = info.middleName || null;
       state.role = info.role || null;
-      state.organizationId = info.organizationId || null;
       state.isBlocked = info.isBlocked || null;
 
     },
     logout(state) {
       //state.token = null;
-      state.organizationId = null;
       state.role = null;
       state.isBlocked = null;
     },

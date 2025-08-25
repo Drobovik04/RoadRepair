@@ -15,7 +15,6 @@ namespace RoadRepair.Tests.Database
 {
     public class TestDbContext : IdentityDbContext<AppUser, IdentityRole<long>, long>, IUnitOfWork
     {
-        public DbSet<Domain.Entities.Organization> Organizations { get; set; }
         public DbSet<Contractor> Contractors { get; set; }
         public DbSet<ContractorService> ContractorServices { get; set; }
         public DbSet<Material> Materials { get; set; }
@@ -103,12 +102,6 @@ namespace RoadRepair.Tests.Database
                 .HasOne(x => x.Worker)
                 .WithMany(x => x.WorkAreaWorkers)
                 .HasForeignKey(x => x.WorkAreaId);
-
-            modelBuilder.Entity<Domain.Entities.User>()
-                .HasOne(x => x.Organization)
-                .WithMany(x => x.Users)
-                .HasForeignKey(x => x.OrganizationId)
-                .OnDelete(DeleteBehavior.Cascade);
 
         }
 

@@ -13,16 +13,9 @@ interface Props {
   onClose: () => void;
   onSubmit: (values: any) => void;
   initialValues?: any;
-  organizationId: number;
 }
 
-const MaterialForm = ({
-  open,
-  onClose,
-  onSubmit,
-  initialValues,
-  organizationId,
-}: Props) => {
+const MaterialForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
   const [form] = Form.useForm();
   const [types, setTypes] = useState<TypeOfMeasure[]>([]);
   const [addingTypeOfMeasure, setAddingTypeOfMeasure] = useState(false);
@@ -37,12 +30,10 @@ const MaterialForm = ({
       form.resetFields();
       setEditingMaterial(null);
     }
-    form.setFieldValue("organizationId", organizationId);
-  }, [initialValues, organizationId]);
+  }, [initialValues]);
 
   useEffect(() => {
     getTypesOfMeasure().then((res) => setTypes(res.data));
-    form.setFieldValue("organizationId", organizationId);
   }, []);
 
   const handleAddTypeOfMeasure = async () => {
@@ -122,9 +113,6 @@ const MaterialForm = ({
               </Select.Option>
             ))}
           </Select>
-        </Form.Item>
-        <Form.Item name="organizationId" hidden>
-          <Input />
         </Form.Item>
       </Form>
     </Modal>

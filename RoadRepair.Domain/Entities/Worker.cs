@@ -9,8 +9,6 @@ namespace RoadRepair.Domain.Entities
     public class Worker
     {
         public long Id { get; set; }
-        public long OrganizationId { get; set; }
-        public Organization Organization { get; set; }
         public string LastName { get; set; }
         public string? MiddleName { get; set; }
         public string FirstName { get; set; }

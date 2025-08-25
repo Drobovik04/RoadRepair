@@ -1,6 +1,5 @@
 export interface Worker {
   id: number;
-  organizationId: number;
   lastName: string;
   middleName: string | null;
   firstName: string;

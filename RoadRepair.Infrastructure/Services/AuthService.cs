@@ -100,7 +100,7 @@ namespace RoadRepair.Infrastructure.Services
 
         public async Task<ErrorOr<List<User>>> GetAllOrgUsers()
         {
-            var list = await _appDbContext.OrgUsers.ToListAsync();
+            var list = await _appDbContext.UsersInfo.ToListAsync();
 
             if (list.Count != 0)
             {
@@ -247,7 +247,6 @@ namespace RoadRepair.Infrastructure.Services
 
             var info = new Dictionary<string, object>
             {
-                { "OrganizationId", user.OrganizationId },
                 { "LastName", user.LastName },
                 { "FirstName", user.FirstName },
                 { "MiddleName", user.MiddleName },

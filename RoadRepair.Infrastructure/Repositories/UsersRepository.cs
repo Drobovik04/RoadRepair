@@ -19,25 +19,25 @@ namespace RoadRepair.Infrastructure.Repositories
         }
         public async Task<long> AddNewUserAsync(User user)
         {
-            await _context.OrgUsers.AddAsync(user);
+            await _context.UsersInfo.AddAsync(user);
             return user.Id;
         }
         public async Task<User?> FindUserByIdAsync(long userId)
         {
-            return await _context.OrgUsers.FirstOrDefaultAsync(x => x.Id == userId);
+            return await _context.UsersInfo.FirstOrDefaultAsync(x => x.Id == userId);
         }
         public async Task<User?> FindUserByAppUserIdAsync(long identityId)
         {
-            return await _context.OrgUsers.FirstOrDefaultAsync(x => x.IdentityId == identityId);
+            return await _context.UsersInfo.FirstOrDefaultAsync(x => x.IdentityId == identityId);
         }
         public void UpdateUser(User user)
         {
-            _context.OrgUsers.Update(user);
+            _context.UsersInfo.Update(user);
         }
 
         public void DeleteUser(User user)
         {
-            _context.OrgUsers.Remove(user);
+            _context.UsersInfo.Remove(user);
         }
 
     }

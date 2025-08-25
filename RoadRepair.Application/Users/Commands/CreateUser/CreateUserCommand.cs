@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Application.Users.Commands.CreateUser
 {
-    public record CreateUserCommand(string LastName, string? MiddleName, string FirstName, long OrganizationId, long IdentityId) : IRequest<ErrorOr<User>>;
+    public record CreateUserCommand(string LastName, string? MiddleName, string FirstName, long IdentityId) : IRequest<ErrorOr<User>>;
 }

@@ -39,7 +39,7 @@ namespace RoadRepair.API.Controllers
             var getWorkAreasResult = await _mediator.Send(query);
 
             return getWorkAreasResult.MatchFirst(
-                workAreas => Ok(new List<WorkAreaInfo>(workAreas.Select(x => new WorkAreaInfo(x.Id, x.OrganizationId, x.Name, x.Description, x.CreatedAt, x.UpdatedAt, x.ResponsibleId, x.Responsible?.LastName, x.Responsible?.FirstName, x.Responsible?.MiddleName)))),
+                workAreas => Ok(new List<WorkAreaInfo>(workAreas.Select(x => new WorkAreaInfo(x.Id, x.Name, x.Description, x.CreatedAt, x.UpdatedAt, x.ResponsibleId, x.Responsible?.LastName, x.Responsible?.FirstName, x.Responsible?.MiddleName)))),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There are no WorkAreas"));
@@ -53,7 +53,7 @@ namespace RoadRepair.API.Controllers
             var getWorkAreaResult = await _mediator.Send(query);
 
             return getWorkAreaResult.MatchFirst(
-                workArea => Ok(new GetWorkAreaResponse(workArea.Id, workArea.OrganizationId, workArea.Name, workArea.Description, workArea.CreatedAt, workArea.UpdatedAt, workArea.ResponsibleId, workArea.Responsible?.LastName, workArea.Responsible?.FirstName, workArea.Responsible?.MiddleName)),
+                workArea => Ok(new GetWorkAreaResponse(workArea.Id, workArea.Name, workArea.Description, workArea.CreatedAt, workArea.UpdatedAt, workArea.ResponsibleId, workArea.Responsible?.LastName, workArea.Responsible?.FirstName, workArea.Responsible?.MiddleName)),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There is no WorkArea with such WorkAreaId"));

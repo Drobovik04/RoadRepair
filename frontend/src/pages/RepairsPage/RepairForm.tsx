@@ -11,16 +11,9 @@ interface Props {
   onClose: () => void;
   onSubmit: (values: any) => void;
   initialValues?: any;
-  organizationId: number;
 }
 
-const RepairForm = ({
-  open,
-  onClose,
-  onSubmit,
-  initialValues,
-  organizationId,
-}: Props) => {
+const RepairForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
   const [form] = Form.useForm();
   const [formFields, setFormFields] = useState<any>(null);
   const [editingWorkArea, setEditingWorkArea] = useState<WorkArea | null>(null);
@@ -37,7 +30,6 @@ const RepairForm = ({
         form.resetFields();
         setEditingWorkArea(null);
       }
-      form.setFieldValue("organizationId", organizationId);
     }
   }, [initialValues, open]);
 
@@ -94,9 +86,6 @@ const RepairForm = ({
               </Select.Option>
             ))}
           </Select>
-        </Form.Item>
-        <Form.Item name="organizationId" hidden>
-          <Input />
         </Form.Item>
       </Form>
     </Modal>

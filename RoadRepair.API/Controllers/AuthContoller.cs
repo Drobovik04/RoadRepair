@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RoadRepair.Application.Interfaces;
 using RoadRepair.Application.Materials.Commands.UpdateMaterial;
-using RoadRepair.Application.Organizations.Queries.GetOrganization;
 using RoadRepair.Application.Users.Commands.AssignIdentityAndUser;
 using RoadRepair.Application.Users.Commands.CreateUser;
 using RoadRepair.Application.Users.Commands.DeleteUser;
@@ -54,7 +53,7 @@ namespace RoadRepair.API.Controllers
                 return Problem(detail: result.FirstError.Description);
             }
 
-            var createOrgUserCommand = new CreateUserCommand(request.LastName, request.MiddleName, request.FirstName, request.OrganizationId, result.Value.Item2);
+            var createOrgUserCommand = new CreateUserCommand(request.LastName, request.MiddleName, request.FirstName, result.Value.Item2);
             var orgUser = await _mediator.Send(createOrgUserCommand);
 
             if (orgUser.IsError)
@@ -113,7 +112,7 @@ namespace RoadRepair.API.Controllers
                     var role = roles.Contains("Admin") ? "Admin" : "User";
                     var roleId = _roleManager.Roles.FirstOrDefault(x => x.Name == role).Id;
                     var sadsad = (user as AppUser).IsBlocked;
-                    result.Add(new UserInfo(orgUserAssignWithIdentity.Id, user.UserName, user.PhoneNumber, orgUserAssignWithIdentity.LastName, orgUserAssignWithIdentity.MiddleName, orgUserAssignWithIdentity.FirstName, user.Email, (user as AppUser).IsBlocked, roleId, role, orgUserAssignWithIdentity.OrganizationId, orgUserAssignWithIdentity.CreatedAt));
+                    result.Add(new UserInfo(orgUserAssignWithIdentity.Id, user.UserName, user.PhoneNumber, orgUserAssignWithIdentity.LastName, orgUserAssignWithIdentity.MiddleName, orgUserAssignWithIdentity.FirstName, user.Email, (user as AppUser).IsBlocked, roleId, role, orgUserAssignWithIdentity.CreatedAt));
                 }
             }
 
@@ -125,7 +124,7 @@ namespace RoadRepair.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserRequest request)
         {
-            var command = new UpdateUserCommand(id, request.UserName, request.PhoneNumber, request.LastName, request.MiddleName, request.FirstName, request.Email, request.RoleId, request.OrganizationId);
+            var command = new UpdateUserCommand(id, request.UserName, request.PhoneNumber, request.LastName, request.MiddleName, request.FirstName, request.Email, request.RoleId);
 
             var result = await _mediator.Send(command);
 

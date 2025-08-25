@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using RoadRepair.Application.Interfaces.Repositories;
-using RoadRepair.Application.Organizations.Queries.GetOrganization;
 using RoadRepair.Domain.Entities;
 using System;
 using System.Collections.Generic;

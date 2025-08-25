@@ -27,7 +27,6 @@ namespace RoadRepair.Application.WorkAreas.Commands.UpdateWorkArea
 
             // потом сделать может проверку на то, чтобы апдейт был больше create, пока пусть меняет в апдейте текущую, хотя, нужно тогда наверное менять время в зависимости от изменения вложений
 
-            workArea.OrganizationId = request.OrganizationId;
             workArea.Name = request.Name;
             workArea.Description = request.Description;
             workArea.CreatedAt = request.CreatedAt;

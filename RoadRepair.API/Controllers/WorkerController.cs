@@ -31,7 +31,7 @@ namespace RoadRepair.API.Controllers
             var getWorkersResult = await _mediator.Send(query);
 
             return getWorkersResult.MatchFirst(
-                workers => Ok(new List<WorkerInfo>(workers.Select(x => new WorkerInfo(x.Id, x.OrganizationId, x.LastName, x.MiddleName, x.FirstName, x.HiredAt, x.FiredAt, x.PositionId, x.Position?.Name)))),
+                workers => Ok(new List<WorkerInfo>(workers.Select(x => new WorkerInfo(x.Id, x.LastName, x.MiddleName, x.FirstName, x.HiredAt, x.FiredAt, x.PositionId, x.Position?.Name)))),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There are no Workers"));
@@ -44,7 +44,7 @@ namespace RoadRepair.API.Controllers
             var getWorkerResult = await _mediator.Send(query);
 
             return getWorkerResult.MatchFirst(
-                worker => Ok(new GetWorkerResponse(worker.Id, worker.OrganizationId, worker.LastName, worker.MiddleName, worker.FirstName, worker.HiredAt, worker.FiredAt, worker.OrganizationId)),
+                worker => Ok(new GetWorkerResponse(worker.Id, worker.LastName, worker.MiddleName, worker.FirstName, worker.HiredAt, worker.FiredAt, worker.PositionId)),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There is no Worker with such WorkerId"));

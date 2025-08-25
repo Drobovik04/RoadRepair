@@ -27,7 +27,6 @@ namespace RoadRepair.Application.Users.Commands.CreateUser
                 LastName = request.LastName,
                 FirstName = request.FirstName,
                 MiddleName = request.MiddleName,
-                OrganizationId = request.OrganizationId,
                 IdentityId = request.IdentityId,
                 CreatedAt = DateTime.UtcNow,
             };

@@ -9,6 +9,5 @@ export interface User {
   isBlocked: boolean;
   roleId: number;
   roleName: string | null;
-  organizationId: number;
   createdAt: string;
 }

@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Application.Materials.Queries.GetAllMaterials
 {
-    public record GetAllMaterialsQuery(long organizationId) : IRequest<ErrorOr<List<Material>>>;
+    public record GetAllMaterialsQuery() : IRequest<ErrorOr<List<Material>>>;
 }

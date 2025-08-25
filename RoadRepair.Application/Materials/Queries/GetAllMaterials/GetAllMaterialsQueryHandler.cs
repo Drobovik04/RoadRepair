@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using RoadRepair.Application.Interfaces.Repositories;
-using RoadRepair.Application.Organizations.Queries.GetOrganization;
 using RoadRepair.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,7 @@ namespace RoadRepair.Application.Materials.Queries.GetAllMaterials
 
         public async Task<ErrorOr<List<Material>>> Handle(GetAllMaterialsQuery query, CancellationToken cancellationToken)
         {
-            var materials = await _materialRepository.GetAllMaterialsAsync(query.organizationId);
+            var materials = await _materialRepository.GetAllMaterialsAsync();
 
             return materials is null
                 ? Error.NotFound(description: "Material not found")

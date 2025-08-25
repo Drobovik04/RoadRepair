@@ -32,9 +32,6 @@ const ContractorServicesPage = ({ workAreaId }: Props) => {
   const [formVisible, setFormVisible] = useState(false);
   const [editingContractorService, setEditingContractorService] =
     useState<ContractorService | null>(null);
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
-  );
 
   const loadContractorServices = (id: number) => {
     getContractorServices(id)

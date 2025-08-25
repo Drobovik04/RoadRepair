@@ -25,9 +25,6 @@ const WorkersPage = () => {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null);
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
-  );
 
   const loadWorkers = () => {
     getWorkers()
@@ -51,7 +48,7 @@ const WorkersPage = () => {
 
   useEffect(() => {
     loadWorkers();
-  }, [organizationId]);
+  }, []);
 
   const handleAdd = () => {
     setEditingWorker(null);
@@ -75,7 +72,7 @@ const WorkersPage = () => {
 
   const handleSubmit = async (values: any) => {
     try {
-      const data = { ...values, organizationId };
+      const data = { ...values };
       data.hiredAt = data.hiredAt?.format("YYYY-MM-DD");
       data.firedAt = data.firedAt?.format("YYYY-MM-DD");
       if (editingWorker) {
@@ -180,7 +177,6 @@ const WorkersPage = () => {
         onClose={() => setFormVisible(false)}
         onSubmit={handleSubmit}
         initialValues={editingWorker || undefined}
-        organizationId={organizationId!}
       />
     </div>
   );

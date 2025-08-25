@@ -48,9 +48,6 @@ const RepairsPage = () => {
     null
   );
   const [form] = Form.useForm();
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
-  );
 
   const zoneWorksRef = useRef<ZoneWorksTabRef>(null);
   const materialSummaryRef = useRef<MaterialsSummaryTabRef>(null);
@@ -72,7 +69,7 @@ const RepairsPage = () => {
 
   useEffect(() => {
     loadWorkAreas();
-  }, [organizationId]);
+  }, []);
 
   const handleAdd = () => {
     setEditingWorkArea(null);
@@ -132,7 +129,7 @@ const RepairsPage = () => {
 
   const handleSubmit = async (values: any) => {
     try {
-      const data = { ...values, organizationId };
+      const data = { ...values };
       data.createdAt = data.createdAt?.format("YYYY-MM-DD");
       data.updatedAt = data.updatedAt?.format("YYYY-MM-DD");
       if (editingWorkArea) {
@@ -208,7 +205,6 @@ const RepairsPage = () => {
         onClose={() => setFormVisible(false)}
         onSubmit={handleSubmit}
         initialValues={editingWorkArea || undefined}
-        organizationId={organizationId!}
       />
 
       <Modal

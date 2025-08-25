@@ -25,9 +25,9 @@ namespace RoadRepair.Infrastructure.Repositories
         {
             return await _context.Materials.FirstOrDefaultAsync(x => x.Id == materialId);
         }
-        public async Task<IEnumerable<Material>> GetAllMaterialsAsync(long organizationId)
+        public async Task<IEnumerable<Material>> GetAllMaterialsAsync()
         {
-            return await _context.Materials.Include(x => x.TypeOfMeasure).Where(x => x.OrganizationId == organizationId).ToListAsync();
+            return await _context.Materials.Include(x => x.TypeOfMeasure).ToListAsync();
         }
         public void UpdateMaterial(Material material)
         {
