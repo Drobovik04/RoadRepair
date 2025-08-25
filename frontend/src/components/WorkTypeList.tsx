@@ -12,11 +12,13 @@ import {
   Select,
   Space,
   message,
+  Typography,
 } from "antd";
+const { Title, Text } = Typography;
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import {
-  getRepairEvents,
+  getRepairEventsByRepairZoneId,
   addRepairEvent,
   updateRepairEvent,
   deleteRepairEvent,
@@ -27,14 +29,14 @@ import { getTypesOfRepair } from "../services/typesOfRepair";
 import { normalize } from "../utilities/dayjsStringConverter";
 import MaterialList from "./MaterialList";
 import MediaList from "./MediaList";
-import Title from "antd/es/typography/Title";
 import WorkTimeTable from "./WorkTImeTable";
 
 interface Props {
   zoneId: number;
+  onWorkTypeUpdated: () => void;
 }
 
-const WorkTypeList = ({ zoneId }: Props) => {
+const WorkTypeList = ({ zoneId, onWorkTypeUpdated }: Props) => {
   const [typesOfRepair, setTypesOfRepair] = useState<TypeOfRepair[]>([]);
   const [repairEvents, setRepairEvents] = useState<RepairEvent[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -49,7 +51,7 @@ const WorkTypeList = ({ zoneId }: Props) => {
 
   const loadWorks = async () => {
     try {
-      const res = await getRepairEvents(zoneId);
+      const res = await getRepairEventsByRepairZoneId(zoneId);
       setRepairEvents(res.data);
     } catch {
       message.error("Ошибка загрузки видов работ");
@@ -90,6 +92,7 @@ const WorkTypeList = ({ zoneId }: Props) => {
       setModalVisible(false);
       setEditingRepairEvent(null);
       loadWorks();
+      onWorkTypeUpdated();
     } catch (err) {
       message.error("Ошибка при сохранении вида работ");
     }
@@ -100,6 +103,7 @@ const WorkTypeList = ({ zoneId }: Props) => {
       await deleteRepairEvent(id);
       message.success("Удалено");
       loadWorks();
+      onWorkTypeUpdated();
     } catch {
       message.error("Ошибка удаления");
     }
@@ -107,7 +111,7 @@ const WorkTypeList = ({ zoneId }: Props) => {
 
   return (
     <>
-      <Title level={2}>Работы на участках</Title>
+      <Title level={4}>Работы на участках</Title>
       <Space style={{ marginBottom: 16 }}>
         <Button icon={<PlusOutlined />} onClick={openCreateModal}>
           Добавить вид работ
@@ -156,7 +160,11 @@ const WorkTypeList = ({ zoneId }: Props) => {
           //
           <List.Item>
             <Card
-              title={item.typeOfRepairName}
+              title={
+                <Title level={4} style={{ margin: 0 }}>
+                  {item.typeOfRepairName}
+                </Title>
+              }
               extra={
                 <Space>
                   <Button
@@ -179,11 +187,14 @@ const WorkTypeList = ({ zoneId }: Props) => {
               }
               style={{ width: "100%" }}
             >
-              <p style={{ fontStyle: "italic" }}>
+              <Text>
                 Дата проведения работ: {item.startedAt?.toString()} —{" "}
                 {item.endedAt?.toString()}
-              </p>
-              <MaterialList repairEventId={item.id} />
+              </Text>
+              <MaterialList
+                repairEventId={item.id}
+                onMaterialListUpdated={onWorkTypeUpdated}
+              />
               <Divider />
               <MediaList repairEventId={item.id} />
             </Card>

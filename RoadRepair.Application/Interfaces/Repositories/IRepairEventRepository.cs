@@ -11,6 +11,7 @@ namespace RoadRepair.Application.Interfaces.Repositories
     {
         Task<IEnumerable<RepairEvent>> GetAllRepairEventsAsync();
         Task<IEnumerable<RepairEvent>> GetAllRepairEventsByRepairZoneIdAsync(long repairZoneId);
+        Task<IEnumerable<RepairEvent>> GetAllRepairEventsByWorkAreaIdAsync(long workAreaId);
         Task<RepairEvent?> GetRepairEventByIdAsync(long id);
         Task AddRepairEventAsync(RepairEvent repairEvent);
         void UpdateRepairEvent(RepairEvent repairEvent);

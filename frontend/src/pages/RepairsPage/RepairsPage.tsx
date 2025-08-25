@@ -27,7 +27,12 @@ import {
 } from "../../services/repairs";
 import RepairForm from "./RepairForm";
 import ContractorServicesPage from "../ContractorServicePage/ContractorServicePage";
-import WorkTimeTable from "../../components/WorkTImeTable";
+import WorkTimeTable, {
+  type WorkTimeTableRef,
+} from "../../components/WorkTImeTable";
+import MaterialsSummaryTab, {
+  type MaterialsSummaryTabRef,
+} from "../../components/MaterialsSummaryTab";
 
 const { TabPane } = Tabs;
 
@@ -48,6 +53,8 @@ const RepairsPage = () => {
   );
 
   const zoneWorksRef = useRef<ZoneWorksTabRef>(null);
+  const materialSummaryRef = useRef<MaterialsSummaryTabRef>(null);
+  const workTimeTableRef = useRef<WorkTimeTableRef>(null);
 
   const loadWorkAreas = async () => {
     getWorkAreas()
@@ -233,25 +240,36 @@ const RepairsPage = () => {
                 workAreaId={selectedWorkArea.id}
                 onZonesUpdated={() => {
                   zoneWorksRef.current?.reload();
+                  materialSummaryRef.current?.reload();
                 }}
               />
             </div>
           </TabPane>
           <TabPane tab="Зоны и виды работ" key="3">
-            <ZoneWorksTab workAreaId={selectedWorkArea.id} ref={zoneWorksRef} />
+            <ZoneWorksTab
+              workAreaId={selectedWorkArea.id}
+              ref={zoneWorksRef}
+              onZoneWorksUpdated={() => {
+                materialSummaryRef.current?.reload();
+                workTimeTableRef.current?.reload();
+              }}
+            />
           </TabPane>
           <TabPane tab="Услуги" key="4">
             {/* <p>Здесь будут услуги от сторонних организаций</p> */}
             <ContractorServicesPage workAreaId={selectedWorkArea.id} />
           </TabPane>
           <TabPane tab="Материалы" key="5">
+            <MaterialsSummaryTab
+              workAreaId={selectedWorkArea.id}
+              ref={materialSummaryRef}
+            />
             {/* <p>Затраченные материалы</p> */}
           </TabPane>
           <TabPane tab="Рабочие" key="6">
             <WorkTimeTable
               workAreaId={selectedWorkArea.id}
-              startDate="2025-07-01"
-              endDate="2025-07-07"
+              ref={workTimeTableRef}
             />
             {/* <p>Календарь трудозатрат, сотрудники</p> */}
           </TabPane>

@@ -9,17 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoadRepair.Application.RepairEvents.Queries.GetAllRepairEvents
+namespace RoadRepair.Application.RepairEvents.Queries.GetAllRepairEventsByRepairZoneId
 {
-    public class GetAllRepairEventsQueryHandler : IRequestHandler<GetAllRepairEventsQuery, ErrorOr<List<RepairEvent>>>
+    public class GetAllRepairEventsByRepairZoneIdQueryHandler : IRequestHandler<GetAllRepairEventsByRepairZoneIdQuery, ErrorOr<List<RepairEvent>>>
     {
         private IRepairEventRepository _repairEventRepository;
-        public GetAllRepairEventsQueryHandler(IRepairEventRepository repairEventRepository)
+        public GetAllRepairEventsByRepairZoneIdQueryHandler(IRepairEventRepository repairEventRepository)
         {
             _repairEventRepository = repairEventRepository;
         }
 
-        public async Task<ErrorOr<List<RepairEvent>>> Handle(GetAllRepairEventsQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<RepairEvent>>> Handle(GetAllRepairEventsByRepairZoneIdQuery query, CancellationToken cancellationToken)
         {
             var repairEvents = await _repairEventRepository.GetAllRepairEventsByRepairZoneIdAsync(query.repairZoneId);
 

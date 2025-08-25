@@ -30,6 +30,13 @@ namespace RoadRepair.Infrastructure.Repositories
         {
             return await _context.RepairEvents.Include(x => x.TypeOfRepair).Where(x => x.RepairZoneId == repairZoneId).ToListAsync();
         }
+        public async Task<IEnumerable<RepairEvent>> GetAllRepairEventsByWorkAreaIdAsync(long workAreaId)
+        {
+            return await _context.RepairEvents
+                .Include(x => x.TypeOfRepair)
+                .Include(x => x.RepairZone)
+                .Where(x => x.RepairZone.WorkAreaId == workAreaId).ToListAsync();
+        }
         public async Task<IEnumerable<RepairEvent>> GetAllRepairEventsAsync()
         {
             return await _context.RepairEvents.ToListAsync();

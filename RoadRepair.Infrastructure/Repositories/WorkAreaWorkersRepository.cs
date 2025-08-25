@@ -25,6 +25,14 @@ namespace RoadRepair.Infrastructure.Repositories
         {
             return await _context.WorkAreaWorkers.FirstOrDefaultAsync(x => x.Id == workAreaWorkerId);
         }
+        public async Task<IEnumerable<WorkAreaWorker>> GetWorkAreaWorkersByIdsWithRepairEventAsync(List<long> workAreaWorkerIds)
+        {
+            return await _context.WorkAreaWorkers
+                .Include(x => x.WorkArea)
+                    .ThenInclude(x => x.RepairZones)
+                        .ThenInclude(x => x.RepairEvents)
+                .Where(x => workAreaWorkerIds.Contains(x.Id)).ToListAsync();
+        }
         public async Task<IEnumerable<WorkAreaWorker>> GetAllWorkAreaWorkersAsync()
         {
             return await _context.WorkAreaWorkers.ToListAsync();

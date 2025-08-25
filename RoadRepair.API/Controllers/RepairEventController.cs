@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using RoadRepair.Application.RepairEvents.Commands.CreateRepairEvent;
 using RoadRepair.Application.RepairEvents.Commands.DeleteRepairEvent;
 using RoadRepair.Application.RepairEvents.Commands.UpdateRepairEvent;
-using RoadRepair.Application.RepairEvents.Queries.GetAllRepairEvents;
+using RoadRepair.Application.RepairEvents.Queries.GetAllRepairEventsByRepairZoneId;
+using RoadRepair.Application.RepairEvents.Queries.GetAllRepairEventsByWorkAreaId;
 using RoadRepair.Application.RepairEvents.Queries.GetRepairEvent;
 using RoadRepair.Contracts.RepairEvents.CreateRepairEvent;
 using RoadRepair.Contracts.RepairEvents.GetAllRepairEvents;
@@ -22,10 +23,24 @@ namespace RoadRepair.API.Controllers
             _mediator = mediatr;
         }
 
-        [HttpGet("workArea/{workAreaId:long}")]
-        public async Task<IActionResult> GetAllRepairEvents(long workAreaId)
+        [HttpGet("repairZone/{repairZoneId:long}")]
+        public async Task<IActionResult> GetAllRepairEventsByRepairZoneId(long repairZoneId)
         {
-            var query = new GetAllRepairEventsQuery(workAreaId);
+            var query = new GetAllRepairEventsByRepairZoneIdQuery(repairZoneId);
+
+            var getRepairEventsResult = await _mediator.Send(query);
+
+            return getRepairEventsResult.MatchFirst(
+                repairEvents => Ok(new List<RepairEventInfo>(repairEvents.Select(x => new RepairEventInfo(x.Id, x.RepairZoneId, x.StartedAt, x.EndedAt, x.TypeOfRepairId, x.TypeOfRepair.Name)))),
+                error => Problem(
+                    statusCode: StatusCodes.Status404NotFound,
+                    detail: "There are no RepairEvents"));
+        }
+
+        [HttpGet("workArea/{workAreaId:long}")]
+        public async Task<IActionResult> GetAllRepairEventsByWorkAreaId(long workAreaId)
+        {
+            var query = new GetAllRepairEventsByWorkAreaIdQuery(workAreaId);
 
             var getRepairEventsResult = await _mediator.Send(query);
 

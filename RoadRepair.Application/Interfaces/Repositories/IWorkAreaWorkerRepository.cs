@@ -11,6 +11,7 @@ namespace RoadRepair.Application.Interfaces.Repositories
     {
         Task<IEnumerable<WorkAreaWorker>> GetAllWorkAreaWorkersAsync();
         Task<IEnumerable<WorkAreaWorker>> GetWorkAreaWorkerByWorkAreaIdAsync(long workAreaId);
+        Task<IEnumerable<WorkAreaWorker>> GetWorkAreaWorkersByIdsWithRepairEventAsync(List<long> workAreaWorkerIds);
         Task<WorkAreaWorker?> GetWorkAreaWorkerByIdAsync(long id);
         Task AddWorkAreaWorkerAsync(WorkAreaWorker workAreaWorker);
         void UpdateWorkAreaWorker(WorkAreaWorker workAreaWorker);

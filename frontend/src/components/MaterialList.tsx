@@ -25,13 +25,15 @@ import type { Contractor } from "../types/Contractor";
 import type { Material } from "../types/Material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
-import Title from "antd/es/typography/Title";
+import { Typography } from "antd";
+const { Text, Title } = Typography;
 
 interface Props {
   repairEventId: number;
+  onMaterialListUpdated: () => void;
 }
 
-const MaterialList = ({ repairEventId }: Props) => {
+const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
   const [materialSpends, setMaterialSpends] = useState<MaterialSpend[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [contractors, setContractors] = useState<Contractor[]>([]);
@@ -115,6 +117,7 @@ const MaterialList = ({ repairEventId }: Props) => {
       form.resetFields();
       setEditingMaterialSpend(null);
       loadMaterialSpends();
+      onMaterialListUpdated();
     } catch {
       message.error("Ошибка при сохранении материалов");
     }
@@ -125,6 +128,7 @@ const MaterialList = ({ repairEventId }: Props) => {
       await deleteMaterialSpend(id);
       message.success("Удалено");
       loadMaterialSpends();
+      onMaterialListUpdated();
     } catch {
       message.error("Ошибка удаления");
     }
@@ -132,7 +136,7 @@ const MaterialList = ({ repairEventId }: Props) => {
 
   return (
     <>
-      <Title level={3}>Затраты материалов</Title>
+      <Title level={4}>Затраты материалов</Title>
       <Space style={{ marginBottom: 16 }}>
         <Button icon={<PlusOutlined />} onClick={openCreateModal}>
           Добавить затраты материала
@@ -164,11 +168,18 @@ const MaterialList = ({ repairEventId }: Props) => {
             ]}
           >
             <div style={{ flex: 1 }}>
-              <strong>{item.materialName}</strong> - {item.contractorName}
-              <br />
-              Количество: {item.volume} {item.typeOfMeasureName}
-              <br />
-              Суммарная стоимость: {item.price}
+              <Title level={5} style={{ marginBottom: 4 }}>
+                {item.materialName}
+              </Title>
+              <Text style={{ display: "block", marginBottom: 4 }}>
+                Контрагент: {item.contractorName}
+              </Text>
+              <Text style={{ display: "block" }}>
+                Количество: {item.volume} {item.typeOfMeasureName}
+              </Text>
+              <Text style={{ display: "block" }}>
+                Общая стоимость: {item.price}
+              </Text>
             </div>
           </List.Item>
         )}
