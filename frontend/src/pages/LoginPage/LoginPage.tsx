@@ -10,9 +10,13 @@ const LoginPage = () => {
       const { data } = await login(values);
       localStorage.setItem("token", data.token);
       navigate("/");
-    } catch {
-      message.error("Ошибка авторизации");
-      navigate("/blocked");
+    } catch (err: any) {
+      const isBlocked = err?.status == 403;
+      if (isBlocked) {
+        navigate("/blocked");
+      } else {
+        message.error("Неверный логин или пароль");
+      }
     }
   };
 

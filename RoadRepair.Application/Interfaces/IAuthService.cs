@@ -25,5 +25,6 @@ namespace RoadRepair.Application.Interfaces
         Task<ErrorOr<bool>> LogoutAsync(string refreshToken);
         Task<ErrorOr<string>> RefreshTokenAsync(string refreshToken);
         Task<ErrorOr<Dictionary<string, object>>> GetInfoAboutUser(string id);
+        Task<ErrorOr<bool>> UpdateUserPassword(long id, string newPassword);
     }
 }

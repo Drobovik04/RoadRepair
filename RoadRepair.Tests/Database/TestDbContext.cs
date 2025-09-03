@@ -32,7 +32,7 @@ namespace RoadRepair.Tests.Database
         public DbSet<WorkArea> WorkAreas { get; set; }
         public DbSet<Worker> Workers { get; set; }
         public DbSet<WorkTime> WorkTimes { get; set; }
-        public DbSet<RoadRepair.Domain.Entities.User> OrgUsers { get; set; }
+        //public DbSet<RoadRepair.Domain.Entities.User> OrgUsers { get; set; }
         //User нету, пока без него, будем через appuser работать, хз
 
         public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }

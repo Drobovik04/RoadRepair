@@ -112,6 +112,26 @@ namespace RoadRepair.Infrastructure.Services
             }
         }
 
+        public async Task<ErrorOr<bool>> UpdateUserPassword(long id, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync((await _userRepository.FindUserByIdAsync(id)).IdentityId.ToString());
+
+            if (user != null)
+            {
+                var removeResult = await _userManager.RemovePasswordAsync(user);
+                if (removeResult.Succeeded)
+                {
+                    var addResult = await _userManager.AddPasswordAsync(user, newPassword);
+                    if (addResult.Succeeded) 
+                    {
+                        return addResult.Succeeded ? true : Error.Failure(description: addResult.Errors.FirstOrDefault().Description ?? "An unknown problem");
+                    }
+                }
+            }
+
+            return Error.Failure(description: "There are not user with such email");
+        }
+
         public async Task<ErrorOr<IdentityUser<long>>> GetIdentityUserById(long id)
         {
             var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
@@ -179,18 +199,33 @@ namespace RoadRepair.Infrastructure.Services
             }
             if (user == null)
             {
-                return Error.Failure(description: "There is no user with such email");
+                return Error.Failure(
+                    description: "There is no user with such email",
+                    metadata: new Dictionary<string, object>()
+                        {
+                            { "StatusCode", 401}
+                        });
             }
                 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (!result.Succeeded)
             {
-                return Error.Failure(description: "Invalid password"); // лучше так не делать, а то мы говорим, что такая почта есть
+                return Error.Failure(
+                    description: "Invalid password", 
+                    metadata: new Dictionary<string, object>()
+                        {
+                            { "StatusCode", 401}
+                        }); // лучше так не делать, а то мы говорим, что такая почта есть
             }
 
             if (user.IsBlocked)
             {
-                return Error.Failure(description: "This User is blocked");
+                return Error.Failure(
+                    description: "This User is blocked", 
+                    metadata: new Dictionary<string, object>()
+                        { 
+                            { "StatusCode", 403} 
+                        });
             }
 
             var token = GenerateToken(user);

@@ -1,7 +1,10 @@
 import React, {
   forwardRef,
+  Profiler,
+  useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -212,42 +215,41 @@ const WorkTimeTable = forwardRef<WorkTimeTableRef, Props>(
     }, [workAreaId]);
 
     // Обработка изменений
-    const handleCellChange = (
-      workerRow: WorkAreaWorker,
-      date: string,
-      val: number | null
-    ) => {
-      setWorkTimes((prev) => {
-        const idx = prev.findIndex(
-          (w) =>
-            w.workAreaWorkerId === workerRow.id &&
-            dayjs(w.dayOfWork).isSame(date, "day")
-        );
-        const newVal = val ?? 0;
-        if (idx >= 0) {
-          if (newVal === 0) {
-            const cp = [...prev];
-            cp.splice(idx, 1);
-            return cp;
-          } else {
-            const cp = [...prev];
-            cp[idx] = { ...cp[idx], hours: newVal };
-            return cp;
+    const handleCellChange = useCallback(
+      (workerRow: WorkAreaWorker, date: string, val: number | null) => {
+        setWorkTimes((prev) => {
+          const idx = prev.findIndex(
+            (w) =>
+              w.workAreaWorkerId === workerRow.id &&
+              dayjs(w.dayOfWork).isSame(date, "day")
+          );
+          const newVal = val ?? 0;
+          if (idx >= 0) {
+            if (newVal === 0) {
+              const cp = [...prev];
+              cp.splice(idx, 1);
+              return cp;
+            } else {
+              const cp = [...prev];
+              cp[idx] = { ...cp[idx], hours: newVal };
+              return cp;
+            }
+          } else if (newVal > 0) {
+            return [
+              ...prev,
+              {
+                id: 0,
+                dayOfWork: dayjs(date).toDate(),
+                hours: newVal,
+                workAreaWorkerId: workerRow.id,
+              },
+            ];
           }
-        } else if (newVal > 0) {
-          return [
-            ...prev,
-            {
-              id: 0,
-              dayOfWork: dayjs(date).toDate(),
-              hours: newVal,
-              workAreaWorkerId: workerRow.id,
-            },
-          ];
-        }
-        return prev;
-      });
-    };
+          return prev;
+        });
+      },
+      []
+    );
 
     interface TableRow {
       key: number;
@@ -259,91 +261,121 @@ const WorkTimeTable = forwardRef<WorkTimeTableRef, Props>(
     }
 
     // Подготовка данных для таблицы
-    const dataSource: TableRow[] = workersList.map((row) => {
-      const worker = allWorkers.find((x) => x.id === row.workerId);
-      const fullName = worker
-        ? [worker.lastName, worker.firstName, worker.middleName]
-            .filter(Boolean)
-            .join(" ")
-        : "—";
+    const dataSource: TableRow[] = useMemo(() => {
+      const result = workersList.map((row) => {
+        const worker = allWorkers.find((x) => x.id === row.workerId);
+        const fullName = worker
+          ? [worker.lastName, worker.firstName, worker.middleName]
+              .filter(Boolean)
+              .join(" ")
+          : "—";
 
-      const hoursByDate = dateList.map((date) => {
-        const wt = workTimes.find(
-          (w) =>
-            w.workAreaWorkerId === row.id &&
-            dayjs(w.dayOfWork).isSame(date, "day")
-        );
-        return wt?.hours ?? 0;
-      });
-
-      const totalHours = hoursByDate.reduce((sum, h) => sum + h, 0);
-
-      return {
-        key: row.id,
-        id: row.id,
-        row,
-        fullName: fullName || "—",
-        totalHours,
-        ...Object.fromEntries(
-          dateList.map((date, idx) => [date, hoursByDate[idx]])
-        ),
-      };
-    });
-
-    // Колонки
-    const columns: ColumnsType<any> = [
-      {
-        title: "Сотрудник",
-        dataIndex: "fullName",
-        fixed: "left",
-        width: 200,
-        render: (_, rec) => (
-          <Space style={{ display: "flex", justifyContent: "space-between" }}>
-            {rec.fullName}
-            <Popconfirm
-              title="Удалить сотрудника из заявки на ремонт?"
-              onConfirm={async () => {
-                await deleteWorkTimeByWorkAreaWorkerId(rec.row.id);
-                await deleteWorkAreaWorker(rec.row.id);
-                setWorkersList((prev) =>
-                  prev.filter((r) => r.id !== rec.row.id)
-                );
-                setWorkTimes((prev) =>
-                  prev.filter((w) => w.workAreaWorkerId !== rec.row.id)
-                );
-                message.success("Удален");
-              }}
-            >
-              <Button danger icon={<DeleteOutlined />}></Button>
-            </Popconfirm>
-          </Space>
-        ),
-      },
-      {
-        title: "Итого часов",
-        dataIndex: "totalHours",
-        width: 120,
-        fixed: "left",
-        render: (val) => <strong>{val}</strong>,
-      },
-      ...dateList.map((date) => ({
-        title: dayjs(date, "YYYY-MM-DD").format("DD-MM-YYYY"),
-        dataIndex: date,
-        width: 100,
-        render: (val: number, rec: any) => {
-          return (
-            <InputNumber
-              min={0}
-              max={24}
-              value={val}
-              onChange={(newVal) => {
-                handleCellChange(rec.row, date, newVal ?? 0);
-              }}
-            />
+        const hoursByDate = dateList.map((date) => {
+          const wt = workTimes.find(
+            (w) =>
+              w.workAreaWorkerId === row.id &&
+              dayjs(w.dayOfWork).isSame(date, "day")
           );
+          return wt?.hours ?? 0;
+        });
+
+        const totalHours = hoursByDate.reduce((sum, h) => sum + h, 0);
+
+        return {
+          key: row.id,
+          id: row.id,
+          row,
+          fullName: fullName || "—",
+          totalHours,
+          ...Object.fromEntries(
+            dateList.map((date, idx) => [date, hoursByDate[idx]])
+          ),
+        };
+      });
+      return result;
+    }, [workersList, allWorkers, workTimes, dateList]);
+
+    interface HoursCellProps {
+      value: number;
+      onChange: (v: number) => void;
+    }
+
+    const HoursCell = React.memo(
+      ({ value, onChange }: HoursCellProps) => {
+        return (
+          <InputNumber
+            min={0}
+            max={24}
+            value={value}
+            onChange={(v) => onChange(v ?? 0)}
+          />
+        );
+      },
+      //(prev, next) => prev.value === next.value
+    );
+
+    const renderHoursCell = (date: any) => (val: any, rec: any) => {
+      const onChange = (newVal: number) =>
+        handleCellChange(rec.row, date, newVal);
+
+      return <HoursCell value={val} onChange={onChange} />;
+    };
+    // Колонки
+
+    const columns: ColumnsType<any> = useMemo(
+      () => [
+        {
+          title: "Сотрудник",
+          dataIndex: "fullName",
+          fixed: "left",
+          width: 200,
+          render: (_, rec) => (
+            <Space style={{ display: "flex", justifyContent: "space-between" }}>
+              {rec.fullName}
+              <Popconfirm
+                title="Удалить сотрудника из заявки на ремонт?"
+                onConfirm={async () => {
+                  await deleteWorkTimeByWorkAreaWorkerId(rec.row.id);
+                  await deleteWorkAreaWorker(rec.row.id);
+                  setWorkersList((prev) =>
+                    prev.filter((r) => r.id !== rec.row.id)
+                  );
+                  setWorkTimes((prev) =>
+                    prev.filter((w) => w.workAreaWorkerId !== rec.row.id)
+                  );
+                  message.success("Удален");
+                }}
+              >
+                <Button danger icon={<DeleteOutlined />}></Button>
+              </Popconfirm>
+            </Space>
+          ),
         },
-      })),
-    ];
+        {
+          title: "Итого часов",
+          dataIndex: "totalHours",
+          width: 120,
+          fixed: "left",
+          render: (val) => <strong>{val}</strong>,
+        },
+        ...dateList.map((date) => ({
+          title: dayjs(date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+          dataIndex: date,
+          width: 100,
+          render: renderHoursCell(date),
+          shouldCellUpdate: (record: any, prevRecord: any) => prevRecord?.[date] !== record?.[date],
+          // render: (val: number, rec: any) => {
+          //   return (
+          //     <HoursCell
+          //       value={val}
+          //       onChange={(newVal) => handleCellChange(rec.row, date, newVal)}
+          //     />
+          //   );
+          // },
+        })),
+      ],
+      [dateList, workersList]
+    );
 
     const handleSave = async () => {
       setSaving(true);
@@ -410,41 +442,40 @@ const WorkTimeTable = forwardRef<WorkTimeTableRef, Props>(
             Сохранить часы
           </Button>
         </Space>
-
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          scroll={{ x: "max-content" }}
-          pagination={false}
-          bordered
-          summary={() => {
-            const totalAll = dataSource.reduce(
-              (sum, row) => sum + row.totalHours,
-              0
-            );
-            return (
-              <Table.Summary.Row>
-                <Table.Summary.Cell index={0}>
-                  <strong>Итого по всем</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={1}>
-                  <strong>{totalAll}</strong>
-                </Table.Summary.Cell>
-                {dateList.map((date, idx) => {
-                  const colTotal = dataSource.reduce(
-                    (sum, row) => sum + (row[date] || 0),
-                    0
-                  );
-                  return (
-                    <Table.Summary.Cell key={date} index={idx + 2}>
-                      <strong>{colTotal}</strong>
-                    </Table.Summary.Cell>
-                  );
-                })}
-              </Table.Summary.Row>
-            );
-          }}
-        />
+          <Table
+            columns={columns}
+            dataSource={dataSource}
+            scroll={{ x: "max-content" }}
+            pagination={false}
+            bordered
+            summary={() => {
+              const totalAll = dataSource.reduce(
+                (sum, row) => sum + row.totalHours,
+                0
+              );
+              return (
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0}>
+                    <strong>Итого по всем</strong>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1}>
+                    <strong>{totalAll}</strong>
+                  </Table.Summary.Cell>
+                  {dateList.map((date, idx) => {
+                    const colTotal = dataSource.reduce(
+                      (sum, row) => sum + (row[date] || 0),
+                      0
+                    );
+                    return (
+                      <Table.Summary.Cell key={date} index={idx + 2}>
+                        <strong>{colTotal}</strong>
+                      </Table.Summary.Cell>
+                    );
+                  })}
+                </Table.Summary.Row>
+              );
+            }}
+          />
         <Modal
           title="Добавление сотрудника"
           open={isAddModalVisible}

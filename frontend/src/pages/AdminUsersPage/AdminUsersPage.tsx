@@ -22,6 +22,7 @@ import {
   deleteUser,
   toggleBlockUser,
   updateUser,
+  changeUserPassword,
 } from "../../services/user";
 import type { User } from "../../types/User";
 import AdminUserForm from "./AdminUserForm";
@@ -30,6 +31,10 @@ const AdminUsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordUser, setPasswordUser] = useState<User | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const loadUsers = () => {
     getUsers()
@@ -63,6 +68,32 @@ const AdminUsersPage: React.FC = () => {
       message.success("Статус обновлён");
     } catch {
       message.error("Ошибка");
+    }
+  };
+
+  const openPasswordModal = (user: User) => {
+    setPasswordUser(user);
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordVisible(true);
+  };
+
+  const handlePasswordSave = async () => {
+    if (!passwordUser) return;
+    if (!newPassword.trim()) {
+      message.warning("Введите новый пароль");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      message.error("Пароли не совпадают");
+      return;
+    }
+    try {
+      await changeUserPassword(passwordUser.id, { newPassword: newPassword });
+      message.success("Пароль обновлён");
+      setPasswordVisible(false);
+    } catch {
+      message.error("Ошибка обновления пароля");
     }
   };
 
@@ -162,6 +193,7 @@ const AdminUsersPage: React.FC = () => {
             icon={record.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
             onClick={() => handleToggleBlock(record)}
           />
+          <Button onClick={() => openPasswordModal(record)}>Сменить пароль</Button>
           <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
           <Popconfirm
             title="Удалить пользователя?"
@@ -186,6 +218,28 @@ const AdminUsersPage: React.FC = () => {
         onSubmit={handleSubmit}
         initialValues={editingUser || undefined}
       />
+      <Modal
+        open={passwordVisible}
+        title={passwordUser ? `Сменить пароль: ${passwordUser.userName}` : "Сменить пароль"}
+        onCancel={() => setPasswordVisible(false)}
+        onOk={handlePasswordSave}
+        okText="Сохранить"
+        cancelText="Отмена"
+        destroyOnClose
+        okButtonProps={{ disabled: !newPassword.trim() || newPassword !== confirmPassword }}
+      >
+        <Input.Password
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="Новый пароль"
+        />
+        <div style={{ height: 8 }} />
+        <Input.Password
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Подтвердите пароль"
+        />
+      </Modal>
     </div>
   );
 };

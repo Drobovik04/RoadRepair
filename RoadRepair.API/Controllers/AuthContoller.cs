@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using Azure.Core;
+using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ using RoadRepair.Contracts.Auth.LoginUser;
 using RoadRepair.Contracts.Auth.RegisterUser;
 using RoadRepair.Contracts.Auth.ToggleBlockUser;
 using RoadRepair.Contracts.Auth.UpdateUser;
+using RoadRepair.Contracts.Auth.UpdateUserPassword;
 using RoadRepair.Contracts.Materials.UpdateMaterial;
 using RoadRepair.Domain.Entities;
 using RoadRepair.Infrastructure.Identity;
@@ -81,7 +83,8 @@ namespace RoadRepair.API.Controllers
                     return Ok(new { token = res.Item1 });
                     },
                 error => Problem(
-                    detail: error.Description));
+                    detail: error.Description, 
+                    statusCode: (int)error.Metadata["StatusCode"]));
         }
 
         [HttpGet("getAllRoles")]
@@ -158,6 +161,19 @@ namespace RoadRepair.API.Controllers
             return result.MatchFirst(
                 _ => Ok(null),
                 error => Problem(error.Description));
+        }
+
+        [HttpPut("updatePassword/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdatePassword(long id, [FromBody] UpdateUserPasswordRequest request)
+        {
+            var result = await _authService.UpdateUserPassword(id, request.NewPassword);
+            return result.MatchFirst(
+                res => {
+                    return Ok(null);
+                },
+                error => Problem(
+                    detail: error.Description));
         }
 
         [HttpPost("refresh")]
