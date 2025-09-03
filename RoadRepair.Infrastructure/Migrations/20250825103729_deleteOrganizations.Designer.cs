@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoadRepair.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using RoadRepair.Infrastructure.Data;
 namespace RoadRepair.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825103729_deleteOrganizations")]
+    partial class deleteOrganizations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -469,10 +472,7 @@ namespace RoadRepair.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdentityId")
-                        .IsUnique();
-
-                    b.ToTable("UsersInfo");
+                    b.ToTable("OrgUsers");
                 });
 
             modelBuilder.Entity("RoadRepair.Domain.Entities.WorkArea", b =>
@@ -821,15 +821,6 @@ namespace RoadRepair.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("WorkArea");
-                });
-
-            modelBuilder.Entity("RoadRepair.Domain.Entities.User", b =>
-                {
-                    b.HasOne("RoadRepair.Infrastructure.Identity.AppUser", null)
-                        .WithOne()
-                        .HasForeignKey("RoadRepair.Domain.Entities.User", "IdentityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("RoadRepair.Domain.Entities.WorkArea", b =>

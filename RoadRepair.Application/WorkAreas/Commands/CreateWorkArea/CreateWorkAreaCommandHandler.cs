@@ -19,7 +19,6 @@ namespace RoadRepair.Application.WorkAreas.Commands.CreateWorkArea
         {
             var workArea = new WorkArea
             {
-                OrganizationId = request.OrganizationId,
                 Name = request.Name,
                 Description = request.Description,
                 CreatedAt = request.CreatedAt,

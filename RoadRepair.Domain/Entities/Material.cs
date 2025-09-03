@@ -13,7 +13,5 @@ namespace RoadRepair.Domain.Entities
         public long TypeOfMeasureId { get; set; }
         public TypeOfMeasure TypeOfMeasure { get; set; }
         public List<MaterialSpend> MaterialSpends { get; set; }
-        public long? OrganizationId { get; set; } // это если вдруг будет много организаций в проге, для их разграничения
-        public Organization Organization { get; set; }
     }
 }

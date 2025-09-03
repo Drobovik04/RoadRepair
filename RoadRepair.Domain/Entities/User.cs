@@ -15,8 +15,6 @@ namespace RoadRepair.Domain.Entities
         public string LastName { get; set; }
         public string? MiddleName { get; set; }
         public string FirstName { get; set; }
-        public long? OrganizationId { get; set; }
-        public Organization? Organization { get; set; }
         //public long? RoleId { get; set; }
         //public Role? Role { get; set; }
         public long IdentityId { get; set; }
@@ -24,14 +22,13 @@ namespace RoadRepair.Domain.Entities
         // хизи, пока пусть AppUser побудет
 
         public User() { }
-        public User(string lastName, string? middleName, string firstName, long? organizationId, long identityId)
+        public User(string lastName, string? middleName, string firstName, long identityId)
         {
             LastName = lastName;
             FirstName = firstName;
             IdentityId = identityId;
 
             if (middleName != null) MiddleName = middleName;
-            if (organizationId != null) OrganizationId = organizationId;
         }
     }
 }

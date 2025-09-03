@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using RoadRepair.Application.Interfaces.Repositories;
 using RoadRepair.Application.Interfaces;
-using RoadRepair.Application.Organizations.Commands.DeleteOrganization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +34,7 @@ namespace RoadRepair.Application.Users.Commands.DeleteUser
 
             await _authService.DeleteIdentityUser(user.IdentityId);
 
-            _userRepository.DeleteUser(user);
+            //_userRepository.DeleteUser(user);
 
             await _unitOfWork.CommitChangesAsync();
 

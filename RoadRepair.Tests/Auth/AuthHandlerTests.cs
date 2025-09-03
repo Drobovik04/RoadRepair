@@ -20,7 +20,6 @@ namespace RoadRepair.Tests.Auth
         public async Task CreateUserCommandHandler_CreatesUser_AndCommits()
         {
             // Arrange
-            var organizationRepo = new Mock<IOrganizationRepository>();
             var userRepo = new Mock<IUserRepository>();
             var unitOfWork = new Mock<IUnitOfWork>();
 
@@ -35,7 +34,6 @@ namespace RoadRepair.Tests.Auth
             userRepo.Verify(x => x.AddNewUserAsync(It.Is<RoadRepair.Domain.Entities.User>(u =>
                 u.LastName == "Иванов" &&
                 u.FirstName == "Иван" &&
-                u.OrganizationId == 1 &&
                 u.IdentityId == 2
             )), Times.Once);
 

@@ -19,7 +19,6 @@ namespace RoadRepair.Application.Workers.Commands.CreateWorker
         {
             var worker = new Worker
             {
-                OrganizationId = request.OrganizationId,
                 LastName = request.LastName,
                 MiddleName = request.MiddleName,
                 FirstName = request.FirstName,

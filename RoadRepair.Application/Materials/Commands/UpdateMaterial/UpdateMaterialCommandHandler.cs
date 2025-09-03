@@ -27,7 +27,6 @@ namespace RoadRepair.Application.Materials.Commands.UpdateMaterial
 
             material.Name = request.Name;
             material.TypeOfMeasureId = request.TypeOfMeasureId;
-            material.OrganizationId = request.OrganizationId;
 
             _materialRepository.UpdateMaterial(material);
 

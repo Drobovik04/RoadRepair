@@ -1,18 +1,11 @@
 import { Form, Input, Button, message, Select } from "antd";
 import { register } from "../../services/auth";
 import { Link, useNavigate } from "react-router-dom";
-import type { Organization } from "../../types/Organization";
 import { useState, useEffect } from "react";
-import { getOrganizations } from "../../services/organizations";
 
 const RegisterPage = () => {
-  const [orgs, setOrgs] = useState<Organization[]>([]);
-
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getOrganizations().then((res) => setOrgs(res.data));
-  }, []);
   const onFinish = async (values: any) => {
     try {
       await register(values);
@@ -42,22 +35,6 @@ const RegisterPage = () => {
       </Form.Item>
       <Form.Item name="password" rules={[{ required: true }]}>
         <Input.Password placeholder="Пароль" />
-      </Form.Item>
-      <Form.Item
-        name="organizationId"
-        label="Организация"
-        rules={[{ required: true }]}
-      >
-        <Select
-          placeholder="Выберите организацию"
-          dropdownRender={(menu) => <>{menu}</>}
-        >
-          {orgs.map((u) => (
-            <Select.Option key={u.id} value={u.id}>
-              {u.name}
-            </Select.Option>
-          ))}
-        </Select>
       </Form.Item>
       <Button htmlType="submit" type="primary" block>
         Зарегистрироваться

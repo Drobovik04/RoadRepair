@@ -11,8 +11,6 @@ namespace RoadRepair.Domain.Entities
     public class WorkArea
     {
         public long Id { get; set; }
-        public long OrganizationId { get; set; }
-        public Organization Organization { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
         public DateOnly? CreatedAt { get; set; }

@@ -15,7 +15,6 @@ namespace RoadRepair.Infrastructure.Data
 {
     public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<long>, long>, IUnitOfWork
     {
-        public DbSet<Organization> Organizations { get; set; }
         public DbSet<Contractor> Contractors { get; set; }
         public DbSet<ContractorService> ContractorServices { get; set; }
         public DbSet<Material> Materials { get; set; }
@@ -32,7 +31,7 @@ namespace RoadRepair.Infrastructure.Data
         public DbSet<WorkArea> WorkAreas { get; set; }
         public DbSet<Worker> Workers { get; set; }
         public DbSet<WorkTime> WorkTimes { get; set; }
-        public DbSet<User> OrgUsers { get; set; }
+        public DbSet<User> UsersInfo { get; set; }
         //User нету, пока без него, будем через appuser работать, хз
 
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options) { }
@@ -104,11 +103,6 @@ namespace RoadRepair.Infrastructure.Data
                 .WithMany(x => x.WorkAreaWorkers)
                 .HasForeignKey(x => x.WorkAreaId);
 
-            modelBuilder.Entity<User>()
-                .HasOne(x => x.Organization)
-                .WithMany(x => x.Users)
-                .HasForeignKey(x => x.OrganizationId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<RepairEventMedia>()
                 .HasOne(x => x.RepairEvent)
@@ -140,6 +134,12 @@ namespace RoadRepair.Infrastructure.Data
             modelBuilder.Entity<WorkTime>()
                 .HasIndex(wt => new { wt.WorkAreaWorkerId, wt.DayOfWork })
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasOne<AppUser>()
+                .WithOne()
+                .HasForeignKey<User>(x => x.IdentityId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
 

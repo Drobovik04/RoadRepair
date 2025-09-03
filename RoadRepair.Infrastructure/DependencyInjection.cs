@@ -64,7 +64,6 @@ namespace RoadRepair.Infrastructure
             services.AddAuthorization();
 
             //Repositories and etc.
-            services.AddScoped<IOrganizationRepository, OrganizationsRepository>();
             services.AddScoped<IUserRepository, UsersRepository>();
             services.AddScoped<IIdentityRepository, IdentityRepository>();
             services.AddScoped<IPositionRepository, PositionsRepository>();

@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import type { TypeOfRole } from "../../types/TypeOfRole";
 import type { User } from "../../types/User";
 import { getAllRoles } from "../../services/auth";
-import type { Organization } from "../../types/Organization";
-import { getOrganizations } from "../../services/organizations";
 
 interface Props {
   open: boolean;
@@ -16,7 +14,6 @@ interface Props {
 const AdminUserForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
   const [form] = Form.useForm();
   const [roles, setRoles] = useState<TypeOfRole[]>([]);
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -31,7 +28,6 @@ const AdminUserForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
 
   useEffect(() => {
     getAllRoles().then((res) => setRoles(res.data));
-    getOrganizations().then((res) => setOrganizations(res.data));
   }, []);
 
   const handleModalClose = () => {
@@ -85,20 +81,6 @@ const AdminUserForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
         <Form.Item name="roleId" label="Роль" rules={[{ required: true }]}>
           <Select placeholder="Выберите роль">
             {roles.map((u) => (
-              <Select.Option key={u.id} value={u.id}>
-                {u.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="organizationId"
-          label="Организация"
-          rules={[{ required: true }]}
-        >
-          <Select placeholder="Выберите организацию">
-            {organizations.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.name}
               </Select.Option>

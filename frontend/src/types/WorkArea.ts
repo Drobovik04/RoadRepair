@@ -1,6 +1,5 @@
 export interface WorkArea {
   id: number;
-  organizationId: number;
   name: string;
   description: string | null;
   createdAt: Date | null;

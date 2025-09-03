@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using RoadRepair.Application.Interfaces.Repositories;
 using RoadRepair.Application.Interfaces;
-using RoadRepair.Application.Organizations.Commands.DeleteOrganization;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -7,7 +7,6 @@ export interface RegisterDto {
   firstName: string;
   middleName: string | null;
   password: string;
-  organizationId: number;
 }
 
 export interface AuthDto {

@@ -20,28 +20,20 @@ import {
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 
-interface Props {
-  organizationId: number;
-}
-
 const MaterialsPage = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
-  );
 
   const loadMaterials = () => {
-    if (!organizationId) return;
-    getMaterials(organizationId!)
+    getMaterials()
       .then((res) => setMaterials(res.data))
       .catch(() => message.error("Не удалось загрузить материалы"));
   };
 
   useEffect(() => {
     loadMaterials();
-  }, [organizationId]);
+  }, []);
 
   const handleAdd = () => {
     setEditingMaterial(null);
@@ -65,7 +57,7 @@ const MaterialsPage = () => {
 
   const handleSubmit = async (values: any) => {
     try {
-      const data = { ...values, organizationId };
+      const data = { ...values };
       if (editingMaterial) {
         await updateMaterial(editingMaterial.id, data);
         message.success("Материал обновлен");
@@ -129,7 +121,6 @@ const MaterialsPage = () => {
         onClose={() => setFormVisible(false)}
         onSubmit={handleSubmit}
         initialValues={editingMaterial || undefined}
-        organizationId={organizationId!}
       />
     </div>
   );

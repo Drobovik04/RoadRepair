@@ -41,9 +41,6 @@ const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
   const [form] = Form.useForm();
   const [editingMaterialSpend, setEditingMaterialSpend] =
     useState<MaterialSpend | null>(null);
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
-  );
 
   useEffect(() => {
     loadMaterials();
@@ -64,12 +61,8 @@ const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
   };
 
   const loadMaterials = async () => {
-    if (organizationId == null) {
-      message.error("Нет organizationId для загрузки материалов");
-      return;
-    }
     try {
-      const res = await getMaterials(organizationId);
+      const res = await getMaterials();
       setMaterials(res.data);
     } catch {
       message.error("Ошибка загрузки материалов");

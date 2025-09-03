@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using RoadRepair.Application.Interfaces.Repositories;
 using RoadRepair.Application.Interfaces;
-using RoadRepair.Application.Organizations.Commands.CreateOrganization;
 using RoadRepair.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,6 @@ namespace RoadRepair.Application.Materials.Commands.CreateMaterial
             {
                 Name = request.Name,
                 TypeOfMeasureId = request.TypeOfMeasureId,
-                OrganizationId = request.OrganizationId
             };
 
             await _materialRepository.AddMaterialAsync(material);

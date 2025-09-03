@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Contracts.Materials.GetAllMaterials
 {
-    public record MaterialInfo(long Id, string Name, long TypeOfMeasureId, string TypeOfMeasureName, long? OrganizationId);
+    public record MaterialInfo(long Id, string Name, long TypeOfMeasureId, string TypeOfMeasureName);
     public record GetAllMaterialsResponse(List<MaterialInfo> Values);
 }

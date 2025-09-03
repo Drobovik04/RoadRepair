@@ -23,15 +23,15 @@ namespace RoadRepair.API.Controllers
             _mediator = mediatr;
         }
 
-        [HttpGet("organization/{organizationId:long}")]
-        public async Task<IActionResult> GetAllMaterials(long organizationId)
+        [HttpGet]
+        public async Task<IActionResult> GetAllMaterials()
         {
-            var query = new GetAllMaterialsQuery(organizationId);
+            var query = new GetAllMaterialsQuery();
 
             var getMaterialsResult = await _mediator.Send(query);
 
             return getMaterialsResult.MatchFirst(
-                material => Ok(new List<MaterialInfo>(material.Select(x => new MaterialInfo(x.Id, x.Name, x.TypeOfMeasureId, x.TypeOfMeasure.Name, x.OrganizationId)).ToList())),
+                material => Ok(new List<MaterialInfo>(material.Select(x => new MaterialInfo(x.Id, x.Name, x.TypeOfMeasureId, x.TypeOfMeasure.Name)).ToList())),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There are no Materials"));
@@ -45,7 +45,7 @@ namespace RoadRepair.API.Controllers
             var getMaterialResult = await _mediator.Send(query);
 
             return getMaterialResult.MatchFirst(
-                material => Ok(new GetMaterialResponse(material.Id, material.Name, material.TypeOfMeasureId, material.OrganizationId)),
+                material => Ok(new GetMaterialResponse(material.Id, material.Name, material.TypeOfMeasureId)),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There is no Material with such MaterialId"));

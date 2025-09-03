@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using RoadRepair.Application.Interfaces.Repositories;
-using RoadRepair.Application.Organizations.Queries.GetOrganization;
 using RoadRepair.Domain.Entities;
 
 namespace RoadRepair.Application.RepairEvents.Queries.GetRepairEvent

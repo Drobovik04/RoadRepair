@@ -2,7 +2,6 @@
 using MediatR;
 using RoadRepair.Application.Interfaces;
 using RoadRepair.Application.Interfaces.Repositories;
-using RoadRepair.Application.Organizations.Commands.DeleteOrganization;
 using RoadRepair.Application.TypesOfService.Commands.DeleteTypeOfService;
 using RoadRepair.Domain.Entities;
 using System;
