@@ -1,7 +1,9 @@
 ﻿using ErrorOr;
-using RoadRepair.Application.Interfaces.Repositories;
-using RoadRepair.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using RoadRepair.Application.Errors;
+using RoadRepair.Application.Interfaces;
+using RoadRepair.Application.Interfaces.Repositories;
 using RoadRepair.Application.TypesOfMeasure.Commands.UpdateTypeOfMeasure;
 
 namespace RoadRepair.Application.TypesOfMeasure.Commands.UpdateTypeOfMeasure
@@ -25,6 +27,7 @@ namespace RoadRepair.Application.TypesOfMeasure.Commands.UpdateTypeOfMeasure
             }
 
             typeOfMeasure.Name = request.Name;
+            typeOfMeasure.ShortName = request.ShortName;
 
             _typeOfMeasureRepository.UpdateTypeOfMeasure(typeOfMeasure);
 

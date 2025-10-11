@@ -15,17 +15,17 @@ const LoginPage = () => {
       if (isBlocked) {
         navigate("/blocked");
       } else {
-        message.error("Неверный логин или пароль");
+        //message.error("Неверный логин или пароль");
       }
     }
   };
 
   return (
     <Form onFinish={onFinish} style={{ maxWidth: 300, margin: "50px auto" }}>
-      <Form.Item name="emailOrUserName" rules={[{ required: true }]}>
-        <Input placeholder="Логин" />
+      <Form.Item name="emailOrUserName" messageVariables={{ label: "Логин или email" }} rules={[{ required: true }]}>
+        <Input placeholder="Логин или email" />
       </Form.Item>
-      <Form.Item name="password" rules={[{ required: true }]}>
+      <Form.Item name="password" messageVariables={{ label: "Пароль" }} rules={[{ required: true }]}>
         <Input.Password placeholder="Пароль" />
       </Form.Item>
       <Button htmlType="submit" type="primary" block>

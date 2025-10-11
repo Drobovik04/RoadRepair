@@ -114,6 +114,9 @@ namespace RoadRepair.Infrastructure.Data
             modelBuilder.Entity<TypeOfMeasure>()
                 .HasIndex(x => x.Name)
                 .IsUnique();
+            modelBuilder.Entity<TypeOfMeasure>()
+                .HasIndex(x => x.ShortName)
+                .IsUnique();
 
             // TypeOfService
             modelBuilder.Entity<TypeOfService>()

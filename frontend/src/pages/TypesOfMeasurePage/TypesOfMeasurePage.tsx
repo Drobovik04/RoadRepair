@@ -8,7 +8,7 @@ import {
   message,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   getTypesOfMeasure,
   addTypeOfMeasure,
@@ -17,12 +17,14 @@ import {
 } from "../../services/typesOfMeasure";
 import TypeOfMeasureForm from "./TypeOfMeasureForm";
 import type { TypeOfMeasure } from "../../types/TypeOfMeasure";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const TypesOfMeasurePage = () => {
   const [typesOfMeasure, setTypesOfMeasre] = useState<TypeOfMeasure[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingTypeOfMeasure, setEditingTypeOfMeasure] =
     useState<TypeOfMeasure | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadTypesOfMeasure = () => {
     getTypesOfMeasure()
@@ -33,6 +35,15 @@ const TypesOfMeasurePage = () => {
   useEffect(() => {
     loadTypesOfMeasure();
   }, []);
+
+  const filtered = useMemo(
+    () =>
+      filterByQuery(typesOfMeasure, search, [
+        (t) => t.name,
+        (t) => t.shortName,
+      ]),
+    [typesOfMeasure, search]
+  );
 
   const handleAdd = () => {
     setEditingTypeOfMeasure(null);
@@ -73,12 +84,19 @@ const TypesOfMeasurePage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить единицу измерения
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить единицу измерения</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={typesOfMeasure}
+        dataSource={filtered}
         bordered
         columns={[
           {
@@ -86,6 +104,12 @@ const TypesOfMeasurePage = () => {
             dataIndex: "name",
             showSorterTooltip: { target: "full-header" },
             sorter: (a, b) => a.name.localeCompare(b.name),
+          },
+          {
+            title: "Сокращенное название",
+            dataIndex: "shortName",
+            showSorterTooltip: { target: "full-header" },
+            sorter: (a, b) => a.shortName.localeCompare(b.shortName),
           },
           {
             title: "Действия",

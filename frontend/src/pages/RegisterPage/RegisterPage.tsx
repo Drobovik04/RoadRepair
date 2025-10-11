@@ -18,22 +18,22 @@ const RegisterPage = () => {
 
   return (
     <Form onFinish={onFinish} style={{ maxWidth: 300, margin: "50px auto" }}>
-      <Form.Item name="userName" rules={[{ required: true }]}>
+      <Form.Item name="userName" messageVariables={{ label: "Логин" }} rules={[{ required: true }]}>
         <Input placeholder="Логин" />
       </Form.Item>
-      <Form.Item name="email" rules={[{ required: true }]}>
+      <Form.Item name="email" messageVariables={{ label: "Адрес электронной почты" }} rules={[{ required: true }]}>
         <Input type="email" placeholder="Адрес электронной почты" />
       </Form.Item>
-      <Form.Item name="lastName" rules={[{ required: true }]}>
+      <Form.Item name="lastName" messageVariables={{ label: "Фамилия" }} rules={[{ required: true }]}>
         <Input placeholder="Фамилия" />
       </Form.Item>
-      <Form.Item name="firstName" rules={[{ required: true }]}>
+      <Form.Item name="firstName" messageVariables={{ label: "Имя" }} rules={[{ required: true }]}>
         <Input placeholder="Имя" />
       </Form.Item>
-      <Form.Item name="middleName" rules={[{ required: false }]}>
+      <Form.Item name="middleName" messageVariables={{ label: "Отчество" }} rules={[{ required: false }]}>
         <Input placeholder="Отчество" />
       </Form.Item>
-      <Form.Item name="password" rules={[{ required: true }]}>
+      <Form.Item name="password" messageVariables={{ label: "Пароль" }} rules={[{ required: true }]}>
         <Input.Password placeholder="Пароль" />
       </Form.Item>
       <Button htmlType="submit" type="primary" block>

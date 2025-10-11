@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Application.TypesOfMeasure.Commands.CreateTypeOfMeasure
 {
-    public record CreateTypeOfMeasureCommand(string Name) : IRequest<ErrorOr<TypeOfMeasure>>;
+    public record CreateTypeOfMeasureCommand(string Name, string ShortName) : IRequest<ErrorOr<TypeOfMeasure>>;
 }

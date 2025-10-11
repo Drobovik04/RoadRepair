@@ -79,7 +79,16 @@ const AdminUserForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
         </Form.Item>
 
         <Form.Item name="roleId" label="Роль" rules={[{ required: true }]}>
-          <Select placeholder="Выберите роль">
+          <Select
+            placeholder="Выберите роль"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
             {roles.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.name}

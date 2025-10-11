@@ -31,7 +31,7 @@ namespace RoadRepair.API.Controllers
             var getMaterialsResult = await _mediator.Send(query);
 
             return getMaterialsResult.MatchFirst(
-                material => Ok(new List<MaterialInfo>(material.Select(x => new MaterialInfo(x.Id, x.Name, x.TypeOfMeasureId, x.TypeOfMeasure.Name)).ToList())),
+                material => Ok(new List<MaterialInfo>(material.Select(x => new MaterialInfo(x.Id, x.Name, x.TypeOfMeasureId, x.TypeOfMeasure.Name, x.TypeOfMeasure.ShortName)).ToList())),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There are no Materials"));

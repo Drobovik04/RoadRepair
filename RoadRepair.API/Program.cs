@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
+using RoadRepair.API.Middlewares;
 using RoadRepair.Application;
 using RoadRepair.Domain.Entities;
 using RoadRepair.Infrastructure;
+using RoadRepair.Infrastructure.Data;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -15,7 +18,7 @@ namespace RoadRepair.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -84,11 +87,20 @@ namespace RoadRepair.API
                 serverOptions.Limits.MaxRequestBodySize = 536870912; // 512 MB
             });
 
+            ExcelPackage.License.SetNonCommercialPersonal("Диплом");
+
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
+                await DatabaseInitializer.SeedRolesAsync(roleManager);
+            }
+
             app.UseExceptionHandler();
             app.UseStaticFiles();
             app.UseCors("FrontendPolicy");
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

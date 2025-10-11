@@ -394,9 +394,16 @@ namespace RoadRepair.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("ShortName")
                         .IsUnique();
 
                     b.ToTable("TypesOfMeasure");

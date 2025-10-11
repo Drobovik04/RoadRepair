@@ -31,7 +31,7 @@ namespace RoadRepair.API.Controllers
             var getAllMaterialSpendsResult = await _mediator.Send(query);
 
             return getAllMaterialSpendsResult.MatchFirst(
-                materialSpend => Ok(new List<MaterialSpendInfo>(materialSpend.Select(x => new MaterialSpendInfo(x.Id, x.MaterialId, x.Material.Name, x.Material.TypeOfMeasureId, x.Material.TypeOfMeasure.Name, x.Price, x.Volume, x.RepairEventId, x.ContractorId, x.Contractor.Name)))),
+                materialSpend => Ok(new List<MaterialSpendInfo>(materialSpend.Select(x => new MaterialSpendInfo(x.Id, x.MaterialId, x.Material.Name, x.Material.TypeOfMeasureId, x.Material.TypeOfMeasure.Name, x.Material.TypeOfMeasure.ShortName, x.Price, x.Volume, x.RepairEventId, x.ContractorId, x.Contractor.Name)))),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There are no MaterialSpends with such repairEventId"));

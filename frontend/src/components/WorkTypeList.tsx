@@ -30,6 +30,7 @@ import { normalize } from "../utilities/dayjsStringConverter";
 import MaterialList from "./MaterialList";
 import MediaList from "./MediaList";
 import WorkTimeTable from "./WorkTImeTable";
+import { colorSchemes } from "../utilities/colors";
 
 interface Props {
   zoneId: number;
@@ -117,89 +118,61 @@ const WorkTypeList = ({ zoneId, onWorkTypeUpdated }: Props) => {
           Добавить вид работ
         </Button>
       </Space>
-
-      {/* <List
-        bordered
-        dataSource={repairEvents}
-        renderItem={(item) => (
-          <List.Item
-            actions={[
-              <Button
-                icon={<EditOutlined />}
-                onClick={() => openEditModal(item)}
-              >
-                Редактировать
-              </Button>,
-              <Popconfirm
-                title="Удалить?"
-                okText="ОК"
-                cancelText="Отмена"
-                onConfirm={() => handleDelete(item.id)}
-              >
-                <Button danger icon={<DeleteOutlined />}>
-                  Удалить
-                </Button>
-              </Popconfirm>,
-            ]}
-          >
-            <div style={{ flex: 1 }}>
-              <strong>{item.typeOfRepairName}</strong>
-              <br />
-              {item.startedAt?.toString()} — {item.endedAt?.toString()}
-              <Divider style={{ margin: "12px 0" }} />
-              <MaterialList repairEventId={item.id} />
-            </div>
-          </List.Item>
-        )}
-      /> */}
-
       <List
         bordered
         dataSource={repairEvents}
-        renderItem={(item) => (
-          //
-          <List.Item>
-            <Card
-              title={
-                <Title level={4} style={{ margin: 0 }}>
-                  {item.typeOfRepairName}
-                </Title>
-              }
-              extra={
-                <Space>
-                  <Button
-                    icon={<EditOutlined />}
-                    onClick={() => openEditModal(item)}
-                  >
-                    Редактировать
-                  </Button>
-                  <Popconfirm
-                    title="Удалить?"
-                    okText="ОК"
-                    cancelText="Отмена"
-                    onConfirm={() => handleDelete(item.id)}
-                  >
-                    <Button danger icon={<DeleteOutlined />}>
-                      Удалить
-                    </Button>
-                  </Popconfirm>
-                </Space>
-              }
-              style={{ width: "100%" }}
+        renderItem={(item, index) => {
+          const scheme = colorSchemes[2];
+          const scheme1 = colorSchemes[3];
+          return (
+            //
+            <List.Item
+              style={{ backgroundColor: scheme.head, borderRadius: 8 }}
             >
-              <Text>
-                Дата проведения работ: {item.startedAt?.toString()} —{" "}
-                {item.endedAt?.toString()}
-              </Text>
-              <MaterialList
-                repairEventId={item.id}
-                onMaterialListUpdated={onWorkTypeUpdated}
-              />
-              <Divider />
-              <MediaList repairEventId={item.id} />
-            </Card>
-          </List.Item>
-        )}
+              <Card
+                title={
+                  <Title level={4} style={{ margin: 0 }}>
+                    {item.typeOfRepairName}
+                  </Title>
+                }
+                extra={
+                  <Space>
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={() => openEditModal(item)}
+                    >
+                      Редактировать
+                    </Button>
+                    <Popconfirm
+                      title="Удалить?"
+                      okText="ОК"
+                      cancelText="Отмена"
+                      onConfirm={() => handleDelete(item.id)}
+                    >
+                      <Button danger icon={<DeleteOutlined />}>
+                        Удалить
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                }
+                style={{ width: "100%" }}
+                headStyle={{ backgroundColor: scheme1.head, borderWidth: 2 }}
+                bodyStyle={{ backgroundColor: scheme1.body }}
+              >
+                <Text>
+                  Дата проведения работ: {item.startedAt?.toString()} —{" "}
+                  {item.endedAt?.toString()}
+                </Text>
+                <MaterialList
+                  repairEventId={item.id}
+                  onMaterialListUpdated={onWorkTypeUpdated}
+                />
+                <Divider />
+                <MediaList repairEventId={item.id} />
+              </Card>
+            </List.Item>
+          );
+        }}
       />
 
       <Modal

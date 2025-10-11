@@ -30,7 +30,7 @@ namespace RoadRepair.API.Controllers
             var getAllTypesOfMeasureResult = await _mediator.Send(query);
 
             return getAllTypesOfMeasureResult.MatchFirst(
-                typesOfMeasure => Ok(new List<TypeOfMaterialInfo>(getAllTypesOfMeasureResult.Value.Select(x => new TypeOfMaterialInfo(x.Id, x.Name)).ToList())),
+                typesOfMeasure => Ok(new List<TypeOfMaterialInfo>(getAllTypesOfMeasureResult.Value.Select(x => new TypeOfMaterialInfo(x.Id, x.Name, x.ShortName)).ToList())),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There are no TypesOfMeasure"));
@@ -44,7 +44,7 @@ namespace RoadRepair.API.Controllers
             var getTypeOfMeasureResult = await _mediator.Send(query);
 
             return getTypeOfMeasureResult.MatchFirst(
-                typeOfMeasure => Ok(new GetTypeOfMeasureResponse(typeOfMeasure.Id, typeOfMeasure.Name)),
+                typeOfMeasure => Ok(new GetTypeOfMeasureResponse(typeOfMeasure.Id, typeOfMeasure.Name, typeOfMeasure.ShortName)),
                 error => Problem(
                     statusCode: StatusCodes.Status404NotFound,
                     detail: "There is no TypeOfMeasure with such TypeOfMeasureId"));
@@ -53,7 +53,7 @@ namespace RoadRepair.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTypeOfMeasure([FromBody] CreateTypeOfMeasureRequest request)
         {
-            var command = new CreateTypeOfMeasureCommand(request.Name);
+            var command = new CreateTypeOfMeasureCommand(request.Name, request.ShortName);
 
             var createTypeOfMeasureResult = await _mediator.Send(command);
 
@@ -65,7 +65,7 @@ namespace RoadRepair.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTypeOfMeasure(long id, [FromBody] UpdateTypeOfMeasureRequest request)
         {
-            var command = new UpdateTypeOfMeasureCommand(id, request.Name);
+            var command = new UpdateTypeOfMeasureCommand(id, request.Name, request.ShortName);
 
             var result = await _mediator.Send(command);
 

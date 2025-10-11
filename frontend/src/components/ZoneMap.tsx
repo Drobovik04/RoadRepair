@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { createRoot } from "react-dom/client";
 import { Button, Input, message, Modal } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, Loading3QuartersOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   addRepairZone,
   deleteRepairZone,
@@ -187,12 +187,12 @@ const MapLogic = ({
       const res = await getRepairZones(workAreaId);
       res.data.forEach((zone) => {
         if (!zone.geometryJson) return;
-        console.log("Добавляю зону", zone.id);
         const geometry = JSON.parse(zone.geometryJson);
         const layer = L.geoJSON(geometry).getLayers()[0] as LayerWithZoneId;
         layer.options.repairZoneId = zone.id;
         layer.options.name = zone.name;
         layer.options.color = "#3388ff";
+        (layer as unknown as L.Path).setStyle?.({ color: "#3388ff" });
         attachLayerEvents(layer);
         drawnItemsRef.current.addLayer(layer);
       });
@@ -209,6 +209,8 @@ const MapLogic = ({
         isEditingNameOnly ? "Редактировать имя зоны" : "Назначить имя зоне"
       }
       open={isModalVisible}
+      okText="Ок"
+      cancelText="Отмена"
       onOk={handleModalOk}
       onCancel={() => {
         setIsModalVisible(false);

@@ -21,7 +21,7 @@ namespace RoadRepair.Application.Users.Commands.AssignIdentityAndUser
         {
             if (!_identityRepository.IsExists(request.IdentityId))
             {
-                return Error.Failure(description: "There is no such Identity");
+                return Error.Failure(description: "Нет такого Identity");
             }
 
 
@@ -29,7 +29,7 @@ namespace RoadRepair.Application.Users.Commands.AssignIdentityAndUser
 
             if (orgUser == null)
             {
-                return Error.Failure(description: "There is no such User");
+                return Error.Failure(description: "Нет такого пользователя");
             }
 
             orgUser.IdentityId = request.IdentityId;

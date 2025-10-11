@@ -79,7 +79,16 @@ const RepairForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
         </Form.Item>
 
         <Form.Item name="responsibleId" label="Ответственный">
-          <Select placeholder="Выберите ответственного">
+          <Select
+            placeholder="Выберите ответственного"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
             {workers.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.lastName + " " + u.firstName + " " + u.middleName}

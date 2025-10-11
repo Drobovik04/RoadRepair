@@ -151,6 +151,7 @@ const AdminUsersPage: React.FC = () => {
       filters: [
         { text: "Админ", value: "admin" },
         { text: "Пользователь", value: "user" },
+        { text: "Менеджер", value: "manager" },
       ],
       onFilter: (value, record) => record.roleName === value,
       render: (role) => (
@@ -193,7 +194,9 @@ const AdminUsersPage: React.FC = () => {
             icon={record.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
             onClick={() => handleToggleBlock(record)}
           />
-          <Button onClick={() => openPasswordModal(record)}>Сменить пароль</Button>
+          <Button onClick={() => openPasswordModal(record)}>
+            Сменить пароль
+          </Button>
           <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
           <Popconfirm
             title="Удалить пользователя?"
@@ -220,13 +223,19 @@ const AdminUsersPage: React.FC = () => {
       />
       <Modal
         open={passwordVisible}
-        title={passwordUser ? `Сменить пароль: ${passwordUser.userName}` : "Сменить пароль"}
+        title={
+          passwordUser
+            ? `Сменить пароль для: ${passwordUser.userName}`
+            : "Сменить пароль"
+        }
         onCancel={() => setPasswordVisible(false)}
         onOk={handlePasswordSave}
         okText="Сохранить"
         cancelText="Отмена"
         destroyOnClose
-        okButtonProps={{ disabled: !newPassword.trim() || newPassword !== confirmPassword }}
+        okButtonProps={{
+          disabled: !newPassword.trim() || newPassword !== confirmPassword,
+        }}
       >
         <Input.Password
           value={newPassword}

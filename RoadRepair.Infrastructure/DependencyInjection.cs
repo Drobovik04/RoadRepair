@@ -12,6 +12,8 @@ using RoadRepair.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using RoadRepair.Application.Interfaces.Reports;
+using RoadRepair.Infrastructure.Reports;
 
 namespace RoadRepair.Infrastructure
 {
@@ -84,6 +86,8 @@ namespace RoadRepair.Infrastructure
 
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<AppDbContext>());
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IExcelReportService, ExcelReportService>();
+            services.AddScoped<IReportBuilder, MaterialReportBuilder>();
 
             return services;
         }

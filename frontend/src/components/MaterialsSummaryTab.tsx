@@ -29,7 +29,9 @@ interface TaskMaterial {
   contractor: string;
   volume: number;
   measure: string;
+  shortMeasure: string;
   price: number;
+  sum: number;
 }
 
 interface TaskView {
@@ -45,7 +47,9 @@ interface MaterialUse {
   contractor: string;
   volume: number;
   measure: string;
+  shortMeasure: string;
   price: number;
+  sum: number;
 }
 
 interface MaterialView {
@@ -87,11 +91,13 @@ const MaterialsSummaryTab = forwardRef<MaterialsSummaryTabRef, Props>(
               contractor: s.contractorName,
               volume: s.volume,
               measure: s.typeOfMeasureName,
+              shortMeasure: s.typeOfMeasureShortName,
               price: s.price,
+              sum: s.price * s.volume,
             }));
 
             const taskTotal = taskMaterials.reduce(
-              (sum, s) => sum + s.price,
+              (sum, s) => sum + s.price * s.volume,
               0
             );
 
@@ -120,9 +126,11 @@ const MaterialsSummaryTab = forwardRef<MaterialsSummaryTabRef, Props>(
                 contractor: s.contractorName,
                 volume: s.volume,
                 measure: s.typeOfMeasureName,
+                shortMeasure: s.typeOfMeasureShortName,
                 price: s.price,
+                sum: s.price * s.volume,
               });
-              allMaterialsMap[matKey].totalPrice += s.price;
+              allMaterialsMap[matKey].totalPrice += s.price * s.volume;
             }
           }
         }
@@ -150,9 +158,11 @@ const MaterialsSummaryTab = forwardRef<MaterialsSummaryTabRef, Props>(
         { title: "Поставщик", dataIndex: "contractor" },
         {
           title: "Кол-во",
-          render: (_: unknown, r: TaskMaterial) => `${r.volume} ${r.measure}`,
+          render: (_: unknown, r: TaskMaterial) =>
+            `${r.volume} ${r.shortMeasure}`,
         },
-        { title: "Стоимость", dataIndex: "price" },
+        { title: "Цена за ед.", dataIndex: "price" },
+        { title: "Сумма", dataIndex: "sum" },
       ],
       []
     );
@@ -163,9 +173,11 @@ const MaterialsSummaryTab = forwardRef<MaterialsSummaryTabRef, Props>(
         { title: "Поставщик", dataIndex: "contractor" },
         {
           title: "Кол-во",
-          render: (_: unknown, r: MaterialUse) => `${r.volume} ${r.measure}`,
+          render: (_: unknown, r: MaterialUse) =>
+            `${r.volume} ${r.shortMeasure}`,
         },
-        { title: "Стоимость", dataIndex: "price" },
+        { title: "Цена за ед.", dataIndex: "price" },
+        { title: "Сумма", dataIndex: "sum" },
       ],
       []
     );

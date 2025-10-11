@@ -45,7 +45,7 @@ namespace RoadRepair.Tests.Auth
                 .Setup(x => x.Send(It.IsAny<AssignIdentityAndUserCommand>(), default))
                 .ReturnsAsync(true);
 
-            var result = controller.Register(new Contracts.Auth.RegisterUser.RegisterUserRequest("Ivanov", "Ivan", null, "ivanov", "ivan@mail.com", "Qwe123!", 1));
+            var result = controller.Register(new Contracts.Auth.RegisterUser.RegisterUserRequest("Ivanov", "Ivan", null, "ivanov", "ivan@mail.com", "Qwe123!"));
 
             Assert.That(result.Result.GetType() == typeof(OkObjectResult));
         }

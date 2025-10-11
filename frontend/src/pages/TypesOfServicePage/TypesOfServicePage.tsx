@@ -8,7 +8,7 @@ import {
   message,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TypeOfService } from "../../types/TypeOfService";
 import {
   getTypesOfService,
@@ -17,12 +17,14 @@ import {
   deleteTypeOfService,
 } from "../../services/typesOfService";
 import TypeOfServiceForm from "./TypeOfServiceForm";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const TypesOfServicePage = () => {
   const [typesOfService, setTypesOfService] = useState<TypeOfService[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingTypeOfService, setEditingTypeOfService] =
     useState<TypeOfService | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadTypesOfService = () => {
     getTypesOfService()
@@ -33,6 +35,11 @@ const TypesOfServicePage = () => {
   useEffect(() => {
     loadTypesOfService();
   }, []);
+
+  const filtered = useMemo(
+    () => filterByQuery(typesOfService, search, [(t) => t.name]),
+    [typesOfService, search]
+  );
 
   const handleAdd = () => {
     setEditingTypeOfService(null);
@@ -73,12 +80,19 @@ const TypesOfServicePage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить тип услуги
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить тип услуги</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={typesOfService}
+        dataSource={filtered}
         bordered
         columns={[
           {

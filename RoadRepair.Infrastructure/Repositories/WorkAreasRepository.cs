@@ -29,6 +29,36 @@ namespace RoadRepair.Infrastructure.Repositories
         {
             return await _context.WorkAreas.Include(x => x.Responsible).ToListAsync();
         }
+        public async Task<WorkArea> GetWorkAreaWithAllDependencies(long workAreaId)
+        {
+            return await _context.WorkAreas
+                .Include(x => x.Responsible)
+                .Include(x => x.RepairZones)
+                    .ThenInclude(x => x.RepairEvents)
+                        .ThenInclude(x => x.TypeOfRepair)
+                .Include(x => x.RepairZones)
+                    .ThenInclude(x => x.RepairEvents)
+                        .ThenInclude(x => x.MaterialSpends)
+                            .ThenInclude(x => x.Material)
+                                .ThenInclude(x => x.TypeOfMeasure)
+                 .Include(x => x.RepairZones)
+                    .ThenInclude(x => x.RepairEvents)
+                        .ThenInclude(x => x.MaterialSpends)
+                            .ThenInclude(x => x.Contractor)
+                .Include(x => x.ContractorServices)
+                    .ThenInclude(x => x.TypeOfService)
+                .Include(x => x.ContractorServices)
+                    .ThenInclude(x => x.Contractor)
+                .Include(x => x.WorkAreaWorkers)
+                    .ThenInclude(x => x.Worker)
+                .Include(x => x.WorkAreaWorkers)
+                    .ThenInclude(x => x.Worker)
+                        .ThenInclude(x => x.Position)
+                .Include(x => x.WorkAreaWorkers)
+                    .ThenInclude(x => x.WorkTimes)
+                .Where(x => x.Id == workAreaId)
+                .FirstOrDefaultAsync();
+        }
         public void UpdateWorkArea(WorkArea workArea)
         {
             _context.WorkAreas.Update(workArea);

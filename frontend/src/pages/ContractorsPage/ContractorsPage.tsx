@@ -8,7 +8,7 @@ import {
   message,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Contractor } from "../../types/Contractor";
 import {
   getContractors,
@@ -17,6 +17,7 @@ import {
   deleteContractor,
 } from "../../services/contractors";
 import ContractorForm from "./ContractorForm";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const ContractorsPage = () => {
   const [contractors, setContractors] = useState<Contractor[]>([]);
@@ -24,6 +25,7 @@ const ContractorsPage = () => {
   const [editingContractor, setEditingContractor] = useState<Contractor | null>(
     null
   );
+  const [search, setSearch] = useState("");
 
   const loadContractors = () => {
     getContractors()
@@ -34,6 +36,18 @@ const ContractorsPage = () => {
   useEffect(() => {
     loadContractors();
   }, []);
+
+  const filtered = useMemo(
+    () =>
+      filterByQuery(contractors, search, [
+        (c) => c.name,
+        (c) => c.address,
+        (c) => c.email,
+        (c) => c.contactPhone,
+        (c) => c.unp,
+      ]),
+    [contractors, search]
+  );
 
   const handleAdd = () => {
     setEditingContractor(null);
@@ -74,12 +88,19 @@ const ContractorsPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить контрагента
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить контрагента</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={contractors}
+        dataSource={filtered}
         bordered
         columns={[
           {

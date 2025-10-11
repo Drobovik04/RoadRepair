@@ -4,6 +4,7 @@ export interface MaterialSpend {
   materialName: string;
   typeOfMeasureId: number;
   typeOfMeasureName: string;
+  typeOfMeasureShortName: string;
   price: number;
   volume: number;
   repairEventId: number;

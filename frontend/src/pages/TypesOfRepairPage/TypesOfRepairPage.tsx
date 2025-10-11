@@ -8,7 +8,7 @@ import {
   message,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TypeOfRepair } from "../../types/TypeOfRepair";
 import {
   getTypesOfRepair,
@@ -17,12 +17,14 @@ import {
   deleteTypeOfRepair,
 } from "../../services/typesOfRepair";
 import TypeOfRepairForm from "./TypeOfRepairForm";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const TypesOfRepairPage = () => {
   const [typesOfRepair, setTypesOfRepair] = useState<TypeOfRepair[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingTypeOfRepair, setEditingTypeOfRepair] =
     useState<TypeOfRepair | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadTypesOfRepair = () => {
     getTypesOfRepair()
@@ -33,6 +35,11 @@ const TypesOfRepairPage = () => {
   useEffect(() => {
     loadTypesOfRepair();
   }, []);
+
+  const filtered = useMemo(
+    () => filterByQuery(typesOfRepair, search, [(t) => t.name]),
+    [typesOfRepair, search]
+  );
 
   const handleAdd = () => {
     setEditingTypeOfRepair(null);
@@ -73,12 +80,19 @@ const TypesOfRepairPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить тип ремонта
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить тип ремонта</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={typesOfRepair}
+        dataSource={filtered}
         bordered
         columns={[
           {

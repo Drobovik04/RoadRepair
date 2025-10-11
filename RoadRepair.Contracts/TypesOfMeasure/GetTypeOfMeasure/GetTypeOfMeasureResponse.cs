@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Contracts.TypesOfMeasure.GetTypeOfMeasure
 {
-    public record GetTypeOfMeasureResponse(long Id, string Name);
+    public record GetTypeOfMeasureResponse(long Id, string Name, string ShortName);
 }

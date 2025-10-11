@@ -1,5 +1,5 @@
 // src/pages/RepairsPage.tsx
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   Button,
   Form,
@@ -11,14 +11,12 @@ import {
   Tabs,
   message,
 } from "antd";
-import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import ZoneWorksTab from "../../components/ZoneWorksTab";
 import type { ZoneWorksTabRef } from "../../components/ZoneWorksTab";
 import ZoneMap from "../../components/ZoneMap";
 import "antd/dist/reset.css";
 import type { WorkArea } from "../../types/WorkArea";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
 import {
   addWorkArea,
   updateWorkArea,
@@ -33,6 +31,7 @@ import WorkTimeTable, {
 import MaterialsSummaryTab, {
   type MaterialsSummaryTabRef,
 } from "../../components/MaterialsSummaryTab";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const { TabPane } = Tabs;
 
@@ -47,7 +46,9 @@ const RepairsPage = () => {
   const [deletingWorkArea, setDeletingWorkArea] = useState<WorkArea | null>(
     null
   );
-  const [form] = Form.useForm();
+  const [sortBy, setSortBy] = useState<"createdAt" | "updatedAt">("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [search, setSearch] = useState("");
 
   const zoneWorksRef = useRef<ZoneWorksTabRef>(null);
   const materialSummaryRef = useRef<MaterialsSummaryTabRef>(null);
@@ -71,15 +72,52 @@ const RepairsPage = () => {
     loadWorkAreas();
   }, []);
 
-  const handleAdd = () => {
+  const filteredWorkAreas = useMemo(
+    () => filterByQuery(workAreas, search, [(w) => w.name]),
+    [workAreas, search]
+  );
+
+  // Мемоизированная сортировка после фильтрации
+  const sortedWorkAreas = useMemo(() => {
+    return [...filteredWorkAreas].sort((a, b) => {
+      const dateA = a[sortBy];
+      const dateB = b[sortBy];
+
+      // Обработка null значений - помещаем их в конец
+      if (!dateA && !dateB) return 0;
+      if (!dateA) return 1;
+      if (!dateB) return -1;
+
+      const comparison = new Date(dateA).getTime() - new Date(dateB).getTime();
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+  }, [filteredWorkAreas, sortBy, sortOrder]);
+
+  // Мемоизированная функция форматирования даты
+  const formatDate = useCallback((date: Date | null) => {
+    if (!date) return "Не указано";
+    return new Date(date).toLocaleDateString("ru-RU", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      // hour: "2-digit",
+      // minute: "2-digit",
+    });
+  }, []);
+
+  const handleAdd = useCallback(() => {
     setEditingWorkArea(null);
     setFormVisible(true);
-  };
+  }, []);
 
-  const handleEdit = (record: WorkArea) => {
+  const handleEdit = useCallback((record: WorkArea) => {
     setEditingWorkArea(record);
     setFormVisible(true);
-  };
+  }, []);
+
+  const handleSelectWorkArea = useCallback((workArea: WorkArea) => {
+    setSelectedWorkArea(workArea);
+  }, []);
 
   const handleDelete = async (id: number) => {
     try {
@@ -148,16 +186,14 @@ const RepairsPage = () => {
 
   return (
     <div>
-      <Space style={{ marginBottom: 16 }}>
+      <Space style={{ marginBottom: 16 }} wrap>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           Добавить ремонт
         </Button>
 
         <Button
           disabled={!selectedWorkArea}
-          onClick={() => {
-            handleEdit(selectedWorkArea!);
-          }}
+          onClick={() => selectedWorkArea && handleEdit(selectedWorkArea)}
         >
           Редактировать выбранный
         </Button>
@@ -166,20 +202,50 @@ const RepairsPage = () => {
           danger
           disabled={!selectedWorkArea}
           onClick={() => {
-            setDeletingWorkArea(selectedWorkArea);
-            setDeleteVisible(true);
+            if (selectedWorkArea) {
+              setDeletingWorkArea(selectedWorkArea);
+              setDeleteVisible(true);
+            }
           }}
         >
           Удалить выбранный
         </Button>
+
+        <Space>
+          <Input.Search
+            allowClear
+            placeholder="Поиск по названию..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: 300 }}
+          />
+          <span>Сортировка:</span>
+          <Select
+            value={sortBy}
+            onChange={setSortBy}
+            style={{ width: 200 }}
+            options={[
+              { value: "createdAt", label: "По дате создания" },
+              { value: "updatedAt", label: "По дате обновления" },
+            ]}
+          />
+          <Select
+            value={sortOrder}
+            onChange={setSortOrder}
+            options={[
+              { value: "desc", label: "По убыванию" },
+              { value: "asc", label: "По возрастанию" },
+            ]}
+          />
+        </Space>
       </Space>
 
       <List
         bordered
-        dataSource={workAreas}
+        dataSource={sortedWorkAreas}
         renderItem={(workArea) => (
           <List.Item
-            onClick={() => setSelectedWorkArea(workArea)}
+            onClick={() => handleSelectWorkArea(workArea)}
             style={{
               backgroundColor:
                 selectedWorkArea?.id === workArea.id ? "#e6f7ff" : "white",
@@ -187,15 +253,31 @@ const RepairsPage = () => {
               borderRadius: "8px",
             }}
           >
-            <strong>{workArea.name}</strong> — (ответственный:{" "}
-            {workArea.responsibleId
-              ? workArea.lastName +
-                " " +
-                workArea.firstName +
-                " " +
-                workArea.middleName
-              : "Не назначен"}
-            )
+            <div style={{ width: "100%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <strong>{workArea.name}</strong> — (ответственный:{" "}
+                  {workArea.responsibleId
+                    ? workArea.lastName +
+                      " " +
+                      workArea.firstName +
+                      " " +
+                      workArea.middleName
+                    : "Не назначен"}
+                  )
+                </div>
+                <div style={{ fontSize: "12px", color: "#666" }}>
+                  {sortBy === "createdAt" ? "Создан" : "Обновлен"}:{" "}
+                  {formatDate(workArea[sortBy])}
+                </div>
+              </div>
+            </div>
           </List.Item>
         )}
       />

@@ -26,6 +26,7 @@ import type { Material } from "../types/Material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { Typography } from "antd";
+import { gold } from "@ant-design/colors";
 const { Text, Title } = Typography;
 
 interface Props {
@@ -138,6 +139,7 @@ const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
 
       <List
         bordered
+        style={{ backgroundColor: gold[0] }}
         dataSource={materialSpends}
         renderItem={(item) => (
           <List.Item
@@ -168,10 +170,10 @@ const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
                 Контрагент: {item.contractorName}
               </Text>
               <Text style={{ display: "block" }}>
-                Количество: {item.volume} {item.typeOfMeasureName}
+                Количество: {item.volume} {item.typeOfMeasureShortName}
               </Text>
               <Text style={{ display: "block" }}>
-                Общая стоимость: {item.price}
+                Цена за единицу: {item.price}
               </Text>
             </div>
           </List.Item>
@@ -201,17 +203,26 @@ const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
             label="Материал"
             rules={[{ required: true }]}
           >
-            <Select placeholder="Выберите материал">
+            <Select
+              placeholder="Выберите материал"
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                String(option?.children)
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            >
               {materials.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
-                  {u.name} {u.typeOfMeasureName}
+                  {u.name} - {u.typeOfMeasureShortName}
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
           <Form.Item
             name="price"
-            label="Общая стоимость"
+            label="Цена за единицу"
             rules={[{ required: true }]}
           >
             <Input />
@@ -231,7 +242,16 @@ const MaterialList = ({ repairEventId, onMaterialListUpdated }: Props) => {
             label="Контрагент"
             rules={[{ required: true }]}
           >
-            <Select placeholder="Выберите контрагента">
+            <Select
+              placeholder="Выберите контрагента"
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                String(option?.children)
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            >
               {contractors.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}

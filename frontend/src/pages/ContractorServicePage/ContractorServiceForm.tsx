@@ -79,7 +79,16 @@ const ContractorServiceForm = ({
           label="Тип услуги"
           rules={[{ required: true }]}
         >
-          <Select placeholder="Выберите тип услуги">
+          <Select
+            placeholder="Выберите тип услуги"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
             {typesOfService.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.name}
@@ -92,7 +101,16 @@ const ContractorServiceForm = ({
           label="Контрагент"
           rules={[{ required: true }]}
         >
-          <Select placeholder="Выберите контрагента">
+          <Select
+            placeholder="Выберите контрагента"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
             {contractors.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.name}

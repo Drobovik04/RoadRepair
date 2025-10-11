@@ -8,7 +8,7 @@ import {
   message,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Worker } from "../../types/Worker";
 import {
   getWorkers,
@@ -20,11 +20,13 @@ import WorkerForm from "./WorkerForm";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import dayjs from "dayjs";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const WorkersPage = () => {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadWorkers = () => {
     getWorkers()
@@ -49,6 +51,17 @@ const WorkersPage = () => {
   useEffect(() => {
     loadWorkers();
   }, []);
+
+  const filtered = useMemo(
+    () =>
+      filterByQuery(workers, search, [
+        (w) => w.lastName,
+        (w) => w.firstName,
+        (w) => w.middleName,
+        (w) => w.positionName,
+      ]),
+    [workers, search]
+  );
 
   const handleAdd = () => {
     setEditingWorker(null);
@@ -91,12 +104,19 @@ const WorkersPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить сотрудника
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить сотрудника</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={workers}
+        dataSource={filtered}
         bordered
         columns={[
           {
@@ -127,7 +147,7 @@ const WorkersPage = () => {
             dataIndex: "hiredAt",
             sorter: (a, b) => a.hiredAt.getTime() - b.hiredAt.getTime(),
             sortDirections: ["descend", "ascend"],
-            render: (date: Date) => dayjs(date).format("YYYY-MM-DD"),
+            render: (date?: Date | null) => (date ? dayjs(date).format("YYYY-MM-DD") : ""),
           },
           {
             title: "Уволен",
@@ -139,7 +159,7 @@ const WorkersPage = () => {
               return a.firedAt!.getTime() - b.firedAt!.getTime();
             },
             sortDirections: ["descend", "ascend"],
-            render: (date: Date) => dayjs(date).format("YYYY-MM-DD"),
+            render: (date?: Date | null) => (date ? dayjs(date).format("YYYY-MM-DD") : ""),
           },
           {
             title: "Должность",

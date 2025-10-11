@@ -11,6 +11,7 @@ namespace RoadRepair.Application.Interfaces.Repositories
     {
         Task<IEnumerable<WorkArea>> GetAllWorkAreasAsync();
         Task<WorkArea?> GetWorkAreaByIdAsync(long id);
+        Task<WorkArea> GetWorkAreaWithAllDependencies(long workAreaId);
         Task AddWorkAreaAsync(WorkArea workArea);
         void UpdateWorkArea(WorkArea workArea);
         void DeleteWorkArea(WorkArea workArea);

@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Contracts.TypesOfMeasure.GetAllTypesOfMeasure
 {
-    public record TypeOfMaterialInfo(long Id, string Name);
+    public record TypeOfMaterialInfo(long Id, string Name, string ShortName);
     public record GetAllTypesOfMeasureResponse(List<TypeOfMaterialInfo> Values);
 }

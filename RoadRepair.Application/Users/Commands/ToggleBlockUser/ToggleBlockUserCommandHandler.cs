@@ -28,7 +28,7 @@ namespace RoadRepair.Application.Users.Commands.ToggleBlockUser
 
             if (user == null)
             {
-                return Error.NotFound(description: "User not found");
+                return Error.NotFound(description: "Пользователь не найден");
             }
 
             var identityUser = await _authService.GetIdentityUserById(user.IdentityId);

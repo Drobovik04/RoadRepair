@@ -8,7 +8,7 @@ import {
   message,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Position } from "../../types/Position";
 import {
   getPositions,
@@ -17,11 +17,13 @@ import {
   deletePosition,
 } from "../../services/positions";
 import PositionForm from "./PositionForm";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const PositionsPage = () => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingPosition, setEditingPosition] = useState<Position | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadPositions = () => {
     getPositions()
@@ -32,6 +34,11 @@ const PositionsPage = () => {
   useEffect(() => {
     loadPositions();
   }, []);
+
+  const filtered = useMemo(
+    () => filterByQuery(positions, search, [(p) => p.name]),
+    [positions, search]
+  );
 
   const handleAdd = () => {
     setEditingPosition(null);
@@ -72,12 +79,19 @@ const PositionsPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить должность
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить должность</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={positions}
+        dataSource={filtered}
         bordered
         columns={[
           {

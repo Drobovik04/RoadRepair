@@ -84,7 +84,15 @@ const WorkerForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
           label="Должность"
           rules={[{ required: true }]}
         >
-          <Select placeholder="Выберите должность">
+          <Select 
+            placeholder="Выберите должность"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }>
             {positions.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.name}

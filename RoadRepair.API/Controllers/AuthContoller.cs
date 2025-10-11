@@ -112,7 +112,7 @@ namespace RoadRepair.API.Controllers
                 {
                     var orgUserAssignWithIdentity = orgUsersValue.FirstOrDefault(x => x.IdentityId == user.Id);
                     var roles = await _userManager.GetRolesAsync(user as AppUser);
-                    var role = roles.Contains("Admin") ? "Admin" : "User";
+                    var role = roles.FirstOrDefault();
                     var roleId = _roleManager.Roles.FirstOrDefault(x => x.Name == role).Id;
                     var sadsad = (user as AppUser).IsBlocked;
                     result.Add(new UserInfo(orgUserAssignWithIdentity.Id, user.UserName, user.PhoneNumber, orgUserAssignWithIdentity.LastName, orgUserAssignWithIdentity.MiddleName, orgUserAssignWithIdentity.FirstName, user.Email, (user as AppUser).IsBlocked, roleId, role, orgUserAssignWithIdentity.CreatedAt));

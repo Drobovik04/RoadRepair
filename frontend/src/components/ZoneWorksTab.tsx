@@ -10,6 +10,7 @@ import WorkTypeList from "./WorkTypeList";
 import { getRepairZones } from "../services/repairZones";
 import type { RepairZone } from "../types/RepairZone";
 import Title from "antd/es/typography/Title";
+import { blue, gray } from "@ant-design/colors";
 
 export interface ZoneWorksTabRef {
   reload: () => void;
@@ -45,24 +46,26 @@ const ZoneWorksTab = forwardRef<ZoneWorksTabRef, Props>(
       <List
         dataSource={zones}
         rowKey="id"
-        renderItem={(zone) => (
-          <List.Item>
-            <Card
-              title={
-                <Title
-                  level={3}
-                  style={{ margin: 0 }}
-                >{`Зона: ${zone.name}`}</Title>
-              }
-              style={{ width: "100%" }}
-            >
-              <WorkTypeList
-                zoneId={zone.id}
-                onWorkTypeUpdated={() => onZoneWorksUpdated()}
-              />
-            </Card>
-          </List.Item>
-        )}
+        renderItem={(zone, index) => {
+          return (
+            <List.Item>
+              <Card
+                title={
+                  <Title
+                    level={3}
+                    style={{ margin: 0 }}
+                  >{`Зона: ${zone.name}`}</Title>
+                }
+                style={{ width: "100%", backgroundColor: "#fcfcfc" }}
+              >
+                <WorkTypeList
+                  zoneId={zone.id}
+                  onWorkTypeUpdated={() => onZoneWorksUpdated()}
+                />
+              </Card>
+            </List.Item>
+          );
+        }}
       />
     );
   }

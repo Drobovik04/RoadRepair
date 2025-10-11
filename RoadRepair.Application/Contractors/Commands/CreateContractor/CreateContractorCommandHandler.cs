@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace RoadRepair.Application.Contractors.Commands.CreateContractor
 {

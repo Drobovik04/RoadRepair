@@ -21,6 +21,8 @@ const MaterialForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
   const [addingTypeOfMeasure, setAddingTypeOfMeasure] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [newTypeOfMeasureName, setNewTypeOfMeasureName] = useState("");
+  const [newTypeOfMeasureShortName, setNewTypeOfMeasureShortName] =
+    useState("");
 
   useEffect(() => {
     if (initialValues) {
@@ -38,10 +40,14 @@ const MaterialForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
 
   const handleAddTypeOfMeasure = async () => {
     try {
-      const res = await addTypeOfMeasure({ name: newTypeOfMeasureName });
+      const res = await addTypeOfMeasure({
+        name: newTypeOfMeasureName,
+        shortName: newTypeOfMeasureShortName,
+      });
       const newType = await getTypeOfMeasure(res.data.id);
       setTypes([...types, { ...newType.data, id: res.data.id }]);
       setNewTypeOfMeasureName("");
+      setNewTypeOfMeasureShortName("");
       setAddingTypeOfMeasure(false);
       message.success("Добавлена новая единица измерения");
       // Устанавливаем новую единицу измерения в форме
@@ -90,6 +96,13 @@ const MaterialForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
         >
           <Select
             placeholder="Выберите или добавьте"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
             dropdownRender={(menu) => (
               <>
                 {menu}
@@ -98,6 +111,14 @@ const MaterialForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
                     value={newTypeOfMeasureName}
                     onChange={(e) => setNewTypeOfMeasureName(e.target.value)}
                     placeholder="Новая единица"
+                    style={{ marginRight: 8 }}
+                  />
+                  <Input
+                    value={newTypeOfMeasureShortName}
+                    onChange={(e) =>
+                      setNewTypeOfMeasureShortName(e.target.value)
+                    }
+                    placeholder="Сокращение новой единицы"
                     style={{ marginRight: 8 }}
                   />
                   <Button onClick={handleAddTypeOfMeasure} type="link">
@@ -109,7 +130,7 @@ const MaterialForm = ({ open, onClose, onSubmit, initialValues }: Props) => {
           >
             {types.map((u) => (
               <Select.Option key={u.id} value={u.id}>
-                {u.name}
+                {u.name} - {u.shortName}
               </Select.Option>
             ))}
           </Select>

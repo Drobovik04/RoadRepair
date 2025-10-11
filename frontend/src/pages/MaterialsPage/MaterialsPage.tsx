@@ -7,8 +7,9 @@ import {
   Input,
   message,
   Popconfirm,
+  notification,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Material } from "../../types/Material";
 import MaterialForm from "./MaterialForm";
 import {
@@ -19,11 +20,13 @@ import {
 } from "../../services/materials";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
+import { filterByQuery } from "../../utilities/textSearch";
 
 const MaterialsPage = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadMaterials = () => {
     getMaterials()
@@ -34,6 +37,15 @@ const MaterialsPage = () => {
   useEffect(() => {
     loadMaterials();
   }, []);
+
+  const filtered = useMemo(
+    () =>
+      filterByQuery(materials, search, [
+        (m) => m.name,
+        (m) => m.typeOfMeasureShortName,
+      ]),
+    [materials, search]
+  );
 
   const handleAdd = () => {
     setEditingMaterial(null);
@@ -74,12 +86,19 @@ const MaterialsPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
-        Добавить материал
-      </Button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>Добавить материал</Button>
+        <Input.Search
+          allowClear
+          placeholder="Поиск..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 320 }}
+        />
+      </div>
       <Table
         rowKey="id"
-        dataSource={materials}
+        dataSource={filtered}
         bordered
         columns={[
           {
@@ -90,9 +109,9 @@ const MaterialsPage = () => {
           },
           {
             title: "Ед. изм.",
-            dataIndex: "typeOfMeasureName",
+            dataIndex: "typeOfMeasureShortName",
             sorter: (a, b) =>
-              a.typeOfMeasureName.localeCompare(b.typeOfMeasureName),
+              a.typeOfMeasureShortName.localeCompare(b.typeOfMeasureShortName),
             sortDirections: ["descend", "ascend"],
           },
           {

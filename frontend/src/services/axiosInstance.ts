@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { notification } from 'antd';
 
 const api = axios.create({
   baseURL: 'http://localhost:56398/api',
@@ -42,8 +43,12 @@ const refreshToken = async () => {
 api.interceptors.response.use(
   res => res,
   async err => {
-    const original = err.config;
-    if (err.response?.status === 401 && !original._retry) {
+    const original = err.config as any;
+    
+    // Обработка ошибок авторизации
+    const isLoginRequest = typeof original?.url === 'string' && original.url.toLowerCase().includes('/auth/login');
+    const skipAuthRefresh = original?.skipAuthRefresh === true;
+    if (err.response?.status === 401 && !original._retry && !isLoginRequest && !skipAuthRefresh) {
       if (isRefreshing) {
         return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
@@ -74,6 +79,44 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
+
+    // Показываем уведомление об ошибке
+    if (err.response?.data) {
+      const errorData = err.response.data;
+      let errorMessage = 'Произошла ошибка';
+      
+      // Извлекаем сообщение об ошибке из ответа сервера
+      if (errorData.detail) {
+        errorMessage = errorData.detail;
+      } else if (errorData.title) {
+        errorMessage = errorData.title;
+      } else if (typeof errorData === 'string') {
+        errorMessage = errorData;
+      } else if (errorData.errors) {
+        errorMessage = errorData.errors;
+      }
+
+      notification.error({
+        message: 'Ошибка',
+        description: errorMessage,
+        placement: 'bottomRight',
+      });
+    } else if (err.request) {
+      // Ошибка сети
+      notification.error({
+        message: 'Ошибка сети',
+        description: 'Не удалось подключиться к серверу',
+        placement: 'bottomRight',
+      });
+    } else {
+      // Другие ошибки
+      notification.error({
+        message: 'Ошибка',
+        description: 'Произошла непредвиденная ошибка',
+        placement: 'bottomRight',
+      });
+    }
+
     return Promise.reject(err);
   }
 );

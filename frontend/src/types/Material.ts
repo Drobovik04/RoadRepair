@@ -3,4 +3,5 @@ export interface Material {
   name: string;
   typeOfMeasureId: number;
   typeOfMeasureName: string;
+  typeOfMeasureShortName: string;
 }

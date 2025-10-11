@@ -80,7 +80,7 @@ namespace RoadRepair.Infrastructure.Services
             }
             else
             {
-                return Error.Failure(description: "There are not roles");
+                return Error.Failure(description: "Роли в базе данных отсутствуют");
             }
         }
 
@@ -94,7 +94,7 @@ namespace RoadRepair.Infrastructure.Services
             }
             else
             {
-                return Error.Failure(description: "There are not users");
+                return Error.Failure(description: "Пользователи не найдены");
             }
         }
 
@@ -124,12 +124,12 @@ namespace RoadRepair.Infrastructure.Services
                     var addResult = await _userManager.AddPasswordAsync(user, newPassword);
                     if (addResult.Succeeded) 
                     {
-                        return addResult.Succeeded ? true : Error.Failure(description: addResult.Errors.FirstOrDefault().Description ?? "An unknown problem");
+                        return addResult.Succeeded ? true : Error.Failure(description: addResult.Errors.FirstOrDefault().Description ?? "Неизвестная ошибка");
                     }
                 }
             }
 
-            return Error.Failure(description: "There are not user with such email");
+            return Error.Failure(description: "Нет пользователя с таким email");
         }
 
         public async Task<ErrorOr<IdentityUser<long>>> GetIdentityUserById(long id)
@@ -142,7 +142,7 @@ namespace RoadRepair.Infrastructure.Services
             }
             else
             {
-                return Error.Failure(description: "There is no user with such Id");
+                return Error.Failure(description: "Нет пользователя с таким Id");
             }
         }
 
@@ -200,7 +200,7 @@ namespace RoadRepair.Infrastructure.Services
             if (user == null)
             {
                 return Error.Failure(
-                    description: "There is no user with such email",
+                    description: "Нет пользователя с таким логином или адресом электронной почты",
                     metadata: new Dictionary<string, object>()
                         {
                             { "StatusCode", 401}
@@ -211,7 +211,7 @@ namespace RoadRepair.Infrastructure.Services
             if (!result.Succeeded)
             {
                 return Error.Failure(
-                    description: "Invalid password", 
+                    description: "Неверный пароль", 
                     metadata: new Dictionary<string, object>()
                         {
                             { "StatusCode", 401}
@@ -221,7 +221,7 @@ namespace RoadRepair.Infrastructure.Services
             if (user.IsBlocked)
             {
                 return Error.Failure(
-                    description: "This User is blocked", 
+                    description: "Этот пользователь заблокирован", 
                     metadata: new Dictionary<string, object>()
                         { 
                             { "StatusCode", 403} 
@@ -240,7 +240,7 @@ namespace RoadRepair.Infrastructure.Services
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                return Error.Failure(description: "There is no user with such UserName");
+                return Error.Failure(description: "Нет пользователя с таким логином");
             }
 
             return user.Id;
@@ -257,7 +257,7 @@ namespace RoadRepair.Infrastructure.Services
             }
             else
             {
-                return Error.Failure(description: "Could not find a user with this refreshToken or it's expired");
+                return Error.Failure(description: "Не найдет пользователь с таким refreshToken или он истек");
             }
 
             //await _signInManager.SignOutAsync();
@@ -272,7 +272,7 @@ namespace RoadRepair.Infrastructure.Services
             }
             else
             {
-                return Error.Failure(description: "Could not find a user with this refreshToken or it's expired");
+                return Error.Failure(description: "Не найдет пользователь с таким refreshToken или он истек");
             }
         }
         public async Task<ErrorOr<Dictionary<string, object>>> GetInfoAboutUser(string id)

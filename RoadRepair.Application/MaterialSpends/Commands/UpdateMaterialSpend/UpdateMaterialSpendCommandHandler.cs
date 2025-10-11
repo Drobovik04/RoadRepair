@@ -25,7 +25,7 @@ namespace RoadRepair.Application.MaterialSpends.Commands.UpdateMaterialSpend
                 return Error.NotFound(description: "MaterialSpend not found");
             }
 
-            materialSpend.MaterialId = request.MaterialSpendId;
+            materialSpend.MaterialId = request.MaterialId;
             materialSpend.Price = request.Price;
             materialSpend.Volume = request.Volume;
             materialSpend.RepairEventId = request.RepairEventId;

@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace RoadRepair.Application.TypesOfMeasure.Commands.UpdateTypeOfMeasure
 {
-    public record UpdateTypeOfMeasureCommand(long TypeOfMeasureId, string Name) : IRequest<ErrorOr<bool>>;
+    public record UpdateTypeOfMeasureCommand(long TypeOfMeasureId, string Name, string ShortName) : IRequest<ErrorOr<bool>>;
 }

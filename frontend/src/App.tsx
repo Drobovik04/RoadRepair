@@ -12,6 +12,7 @@ import TypesOfMeasurePage from "./pages/TypesOfMeasurePage/TypesOfMeasurePage";
 import TypesOfServicePage from "./pages/TypesOfServicePage/TypesOfServicePage";
 import TypesOfRepairPage from "./pages/TypesOfRepairPage/TypesOfRepairPage";
 import RepairsPage from "./pages/RepairsPage/RepairsPage";
+import ReportsPage from "./pages/ReportsPage/ReportsPage";
 import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage";
 import { useSelector } from "react-redux";
 import type { RootState } from "./store";
@@ -52,6 +53,7 @@ function App() {
           <Route path="/workers" element={<WorkersPage />} />
           <Route path="/typesOfRepair" element={<TypesOfRepairPage />} />
           <Route path="/repairs" element={<RepairsPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
           <Route
             path="/adminPanel"
             element={

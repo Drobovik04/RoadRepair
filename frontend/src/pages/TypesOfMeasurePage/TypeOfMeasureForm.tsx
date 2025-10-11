@@ -62,6 +62,13 @@ const TypeOfMeasureForm = ({
         >
           <Input />
         </Form.Item>
+        <Form.Item
+          name="shortName"
+          label="Сокращенное наименовение единицы измерения"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
       </Form>
     </Modal>
   );

@@ -27,6 +27,7 @@ import {
   deleteRepairEventMedia,
 } from "../services/repairEventMedia";
 import type { RepairEventMedia } from "../types/RepairEventMedia";
+import { gold, red, volcano } from "@ant-design/colors";
 
 interface Props {
   repairEventId: number;
@@ -156,7 +157,7 @@ const MediaList = ({ repairEventId }: Props) => {
       <List
         bordered
         dataSource={mediaList}
-        style={{ marginTop: 12 }}
+        style={{ marginTop: 12, backgroundColor: gold[0] }}
         renderItem={(item) => (
           <List.Item
             actions={[

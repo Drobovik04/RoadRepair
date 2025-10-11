@@ -6,6 +6,7 @@ import {
   TeamOutlined,
   UnorderedListOutlined,
   UserOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 import type { MenuItemProps, MenuProps } from "antd";
 import {
@@ -56,10 +57,20 @@ const items: MenuItem[] = [
   getItem("Ремонты", "repairs", <UnorderedListOutlined />),
 ];
 
+const itemsWithManager = [...items];
+itemsWithManager.push(getItem("Отчеты", "reports", <BarChartOutlined />));
+
 const itemsWithAdmin = [...items];
 itemsWithAdmin.push(
-  getItem("Админ панель", "adminPanel", <UnorderedListOutlined />)
+  getItem("Админ панель", "adminPanel", <UnorderedListOutlined />),
+  getItem("Отчеты", "reports", <BarChartOutlined />)
 );
+
+const roleMenuMap: Record<string, MenuItem[]> = {
+  User: items,
+  Manager: itemsWithManager,
+  Admin: itemsWithAdmin,
+};
 
 const menuItemToPath = new Map([
   ["profile", "/profile"],
@@ -71,6 +82,7 @@ const menuItemToPath = new Map([
   ["positions", "/positions"],
   ["workers", "/workers"],
   ["repairs", "/repairs"],
+  ["reports", "/reports"],
   ["adminPanel", "/adminPanel"],
 ]);
 
@@ -121,7 +133,7 @@ const MainLayout = ({ role }: Props) => {
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
-          items={role == "Admin" ? itemsWithAdmin : items}
+          items={roleMenuMap[role]}
           onClick={handleMouseClick}
         />
       </Sider>
