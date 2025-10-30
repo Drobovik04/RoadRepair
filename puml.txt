@@ -1,0 +1,1 @@
+puml-gen D:\RoadRepair -dir -allInOne -excludePaths RoadRepair.Tests,RoadRepair.Contracts,**\net8.0 -createAssociation
