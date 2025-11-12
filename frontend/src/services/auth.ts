@@ -19,8 +19,18 @@ export interface Role {
   name: string;
 }
 
+export interface ProfileUpdateDto {
+  userName: string;
+  email: string;
+  lastName: string;
+  firstName: string;
+  middleName: string | null;
+  phoneNumber: string | null;
+}
+
 export const login = (data: AuthDto) => api.post('/Auth/login', data);
 export const register = (data: RegisterDto) => api.post('/Auth/register', data);
 export const checkLoginAndGetInfoAboutUser = () => api.get('/Auth/getInfoAboutUser');
 export const getAllRoles = () => api.get<Role[]>('/Auth/getAllRoles');
 export const logout = () => api.post('/Auth/logout');
+export const updateMyProfile = (data: ProfileUpdateDto) => api.put('/Auth/updateMyProfile', data);

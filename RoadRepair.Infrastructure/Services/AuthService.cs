@@ -282,6 +282,10 @@ namespace RoadRepair.Infrastructure.Services
 
             var info = new Dictionary<string, object>
             {
+                { "UserId", user.Id },
+                { "UserName", identityUser.UserName },
+                { "Email", identityUser.Email },
+                { "PhoneNumber", identityUser.PhoneNumber },
                 { "LastName", user.LastName },
                 { "FirstName", user.FirstName },
                 { "MiddleName", user.MiddleName },
@@ -294,6 +298,35 @@ namespace RoadRepair.Infrastructure.Services
 
 
             return info;
+        }
+
+        public async Task<ErrorOr<bool>> UpdateCurrentUserProfile(long identityId, string userName, string? phoneNumber, string lastName, string? middleName, string firstName, string? email)
+        {
+            var identityUser = await _userManager.FindByIdAsync(identityId.ToString());
+            if (identityUser == null)
+            {
+                return Error.Failure(description: "Пользователь не найден");
+            }
+
+            // Update Identity user fields
+            identityUser.UserName = userName;
+            identityUser.PhoneNumber = phoneNumber;
+            identityUser.Email = email;
+            await _userManager.UpdateAsync(identityUser as AppUser);
+
+            // Update domain user profile
+            var profile = await _userRepository.FindUserByAppUserIdAsync(identityUser.Id);
+            if (profile == null)
+            {
+                return Error.Failure(description: "Профиль пользователя не найден");
+            }
+            profile.LastName = lastName;
+            profile.FirstName = firstName;
+            profile.MiddleName = middleName;
+            _userRepository.UpdateUser(profile);
+
+            await _appDbContext.CommitChangesAsync();
+            return true;
         }
 
         private string GenerateToken(AppUser user)

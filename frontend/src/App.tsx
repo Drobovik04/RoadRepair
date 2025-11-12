@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "./store";
 import { jwtDecode } from "jwt-decode";
 import BlockedPage from "./pages/BlockPage/BlockPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 const HomePage = () => <div>Главная</div>;
 const AdminPage = () => <div>Панель администратора</div>;
@@ -44,7 +45,7 @@ function App() {
             </PrivateRoute>
           }
         >
-          {/* <Route path="/profile" element={<ProfilePage />} /> */}
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/typesOfMeasure" element={<TypesOfMeasurePage />} />
           <Route path="/materials" element={<MaterialsPage />} />
           <Route path="/typesOfService" element={<TypesOfServicePage />} />

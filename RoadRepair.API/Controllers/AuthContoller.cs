@@ -17,6 +17,7 @@ using RoadRepair.Contracts.Auth.GetAllUsers;
 using RoadRepair.Contracts.Auth.LoginUser;
 using RoadRepair.Contracts.Auth.RegisterUser;
 using RoadRepair.Contracts.Auth.ToggleBlockUser;
+using RoadRepair.Contracts.Auth.UpdateMyProfile;
 using RoadRepair.Contracts.Auth.UpdateUser;
 using RoadRepair.Contracts.Auth.UpdateUserPassword;
 using RoadRepair.Contracts.Materials.UpdateMaterial;
@@ -163,9 +164,30 @@ namespace RoadRepair.API.Controllers
         }
 
         [HttpPut("updatePassword/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdatePassword(long id, [FromBody] UpdateUserPasswordRequest request)
         {
+            var identityIdStr = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(identityIdStr))
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin"))
+            {
+                var orgUsersResult = await _authService.GetAllOrgUsers();
+                if (orgUsersResult.IsError)
+                {
+                    return Problem(detail: orgUsersResult.FirstError.Description);
+                }
+
+                var orgUser = orgUsersResult.Value.FirstOrDefault(u => u.Id == id);
+                if (orgUser == null || orgUser.IdentityId.ToString() != identityIdStr)
+                {
+                    return Forbid();
+                }
+            }
+
             var result = await _authService.UpdateUserPassword(id, request.NewPassword);
             return result.MatchFirst(
                 res => {
@@ -251,6 +273,22 @@ namespace RoadRepair.API.Controllers
                 return s;
 
             return char.ToLowerInvariant(s[0]) + s.Substring(1);
+        }
+
+        [Authorize]
+        [HttpPut("updateMyProfile")]
+        public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateMyProfileRequest request)
+        {
+            var identityIdStr = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(identityIdStr))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _authService.UpdateCurrentUserProfile(long.Parse(identityIdStr), request.UserName, request.PhoneNumber, request.LastName, request.MiddleName, request.FirstName, request.Email);
+            return result.MatchFirst(
+                _ => Ok(null),
+                error => Problem(detail: error.Description));
         }
     }
 }

@@ -10,6 +10,7 @@ using RoadRepair.Application;
 using RoadRepair.Domain.Entities;
 using RoadRepair.Infrastructure;
 using RoadRepair.Infrastructure.Data;
+using RoadRepair.Infrastructure.Identity;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -35,7 +36,7 @@ namespace RoadRepair.API
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
-                    Description = "Введите токен с Bearer",
+                    Description = "Р’РІРµРґРёС‚Рµ С‚РѕРєРµРЅ СЃ Bearer",
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
@@ -87,7 +88,7 @@ namespace RoadRepair.API
                 serverOptions.Limits.MaxRequestBodySize = 536870912; // 512 MB
             });
 
-            ExcelPackage.License.SetNonCommercialPersonal("Диплом");
+            ExcelPackage.License.SetNonCommercialPersonal("Р”РёРїР»РѕРј");
 
             var app = builder.Build();
 
@@ -95,6 +96,11 @@ namespace RoadRepair.API
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
                 await DatabaseInitializer.SeedRolesAsync(roleManager);
+
+				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+				var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+				await DatabaseInitializer.SeedAdminUserAsync(userManager, roleManager, dbContext);
             }
 
             app.UseExceptionHandler();
