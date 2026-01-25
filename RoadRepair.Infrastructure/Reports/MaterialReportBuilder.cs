@@ -154,6 +154,7 @@ namespace RoadRepair.Infrastructure.Reports
 
             sheet.Cells[row, col - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             sheet.Cells[row, col - 1].Style.Font.Bold = true;
+            sheet.Cells[row, col + 1, row, col + 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
             if (groupedMaterials.Count != 0)
             {

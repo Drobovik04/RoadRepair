@@ -90,7 +90,7 @@ const ReportsPage = () => {
           result = await generateMaterialsReport(
             workAreaId,
             params.startDate,
-            params.endDate
+            params.endDate,
           );
           break;
         }
@@ -98,7 +98,7 @@ const ReportsPage = () => {
           result = await generateServicesReport(
             workAreaId,
             params.startDate,
-            params.endDate
+            params.endDate,
           );
           break;
         }
@@ -106,7 +106,7 @@ const ReportsPage = () => {
           result = await generateWorkTimeReport(
             workAreaId,
             params.startDate,
-            params.endDate
+            params.endDate,
           );
           break;
         }
@@ -114,7 +114,7 @@ const ReportsPage = () => {
           result = await generateAllInOneReport(
             workAreaId,
             params.startDate,
-            params.endDate
+            params.endDate,
           );
           break;
         }
@@ -134,7 +134,7 @@ const ReportsPage = () => {
 
   const selectedReportType = Form.useWatch("reportType", form);
   const selectedReport = REPORT_TYPES.find(
-    (rt) => rt.value === selectedReportType
+    (rt) => rt.value === selectedReportType,
   );
 
   // Фильтрация ремонтов для отображения
@@ -204,7 +204,8 @@ const ReportsPage = () => {
                       style={{ width: "100%" }}
                       options={filteredWorkAreas.map((wa) => ({
                         value: wa.id,
-                        label: (
+                        label: wa.name,
+                        children: (
                           <div>
                             <div style={{ fontWeight: 500 }}>{wa.name}</div>
                             {wa.description && (
@@ -237,6 +238,7 @@ const ReportsPage = () => {
                         key: wa.id,
                       }))}
                       dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                      optionRender={(option) => option.data.children}
                       dropdownRender={(menu) => (
                         <div>
                           {searchValue && (
@@ -341,9 +343,9 @@ const ReportsPage = () => {
           </Row>
         </TabPane>
 
-        <TabPane tab="История отчетов" key="history">
+        {/* <TabPane tab="История отчетов" key="history">
           <ReportHistory />
-        </TabPane>
+        </TabPane> */}
       </Tabs>
     </div>
   );

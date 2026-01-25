@@ -178,7 +178,6 @@ const MainLayout = ({ role }: Props) => {
             <Outlet />
           </div>
         </Content>
-        <Footer style={{ textAlign: "center" }}>ФУТЕР ЗАМЕНИТЬ</Footer>
       </Layout>
     </Layout>
   );
